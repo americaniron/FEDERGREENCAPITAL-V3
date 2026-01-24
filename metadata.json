@@ -1,0 +1,7 @@
+{
+  "name": "Federgreen Capital",
+  "description": "A premier global capital investment and advisory firm offering private memberships, financing, and strategic services.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
