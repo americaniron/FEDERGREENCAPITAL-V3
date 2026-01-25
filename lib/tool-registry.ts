@@ -58,7 +58,7 @@ export const TOOL_REGISTRY: ToolDef[] = [
   { id: 'io-payment', name: 'Interest-only payment', category: 'advanced-metrics', description: 'Cash flow impact of IO loan structures.' },
   { id: 'compound-growth', name: 'Compound Growth', category: 'advanced-metrics', description: 'Exponential growth modeling for portfolios.' },
   { id: 'refi-be', name: 'Refinancing Break-Even', category: 'advanced-metrics', description: 'Time to recover refi closing costs via lower rates.' },
-  { id: 'balloon-payment', name: 'Balloon Payment', category: 'advanced-metrics', description: 'Lump-sum payoff modeling for term-limited loans.' },
+  { id: 'balloon-payment', name: 'Baloon Payment', category: 'advanced-metrics', description: 'Lump-sum payoff modeling for term-limited loans.' },
   { id: 'mortgage-prepay', name: 'Mortgage Prepayment', category: 'advanced-metrics', description: 'Impact of extra principal payments on loan term.' },
   { id: 'npv', name: 'Net Present Value (NPV)', category: 'advanced-metrics', description: 'Discounted cash flow value in today\'s currency.' },
   { id: 'irr', name: 'Internal Rate of Return', category: 'advanced-metrics', description: 'Annualized profitability of a multi-year project.' },
@@ -92,15 +92,10 @@ export const TOOL_REGISTRY: ToolDef[] = [
   { id: 'portfolio-performance', name: 'Portfolio Performance', category: 'portfolio', description: 'Aggregated NOI, cash flow, and equity dashboard.' },
 
   // 9. Market Analysis & Data
-  { id: 'data-hub', name: 'Market Intelligence Hub', category: 'market', description: 'Global geospacial, climate, and demographic data integration.' },
+  { id: 'data-hub', name: 'Market Intelligence Hub', category: 'market', description: 'Global geospatial, climate, and demographic data integration.' },
   { id: 'api-settings', name: 'API Configuration', category: 'market', description: 'Manage connection keys for third-party data providers.' },
 
   // 10. Business Analysis
-  { id: 'business-planner', name: 'AI Business Plan Builder', category: 'business', description: 'Step-by-step strategic drafting with AI.' },
-  { id: 'business-valuation-tool', name: 'Business Model Valuation', category: 'business', description: 'Detailed model for startup and enterprise valuation.' },
-
-  // 11. Compliance
-  { id: 'kyc-aml', name: 'KYC/AML Intake', category: 'compliance', description: 'Identity verification and intake for institutional compliance.' },
-  { id: 'risk-checklist', name: 'Risk Checklist', category: 'compliance', description: 'Regulatory red-flag scoring and AML risk categorization.' },
-  { id: 'provider-integration', name: 'Provider Hub', category: 'compliance', description: 'Integration ready connections to licensed KYC providers.' }
+  { id: 'business-planner', name: 'Strategic Business Plan Builder', category: 'business', description: 'Step-by-step strategic drafting suite.' },
+  { id: 'business-valuation-tool', name: 'Business Model Valuation', category: 'business', description: 'Detailed model for startup and enterprise valuation.' }
 ];

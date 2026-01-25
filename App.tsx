@@ -1,105 +1,146 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import GeminiAssistant from './components/GeminiAssistant';
 import InvestmentAnalyzer from './components/InvestmentAnalyzer';
-import TTSPlayer from './components/TTSPlayer';
 import Testimonials from './components/Testimonials';
 import MembershipApplication from './components/MembershipApplication';
 import ContactCenter from './components/ContactCenter';
 import Portal from './components/Portal';
 import SearchCommand from './components/SearchCommand';
-import ScenarioDashboard from './components/data-tools/ScenarioDashboard';
-import ToolRenderer from './components/data-tools/ToolRenderer';
-import { PAGE_DATA, DEFAULT_PAGE, ENTERPRISE_SECTIONS } from './constants';
-import { ArrowRight, CheckCircle2, Pause, Play, ShieldCheck, Globe, Layers, Search as SearchIcon, ArrowDown } from 'lucide-react';
+import ToolPageTemplate from './components/data-tools/ToolPageTemplate';
+import ComplianceHub from './components/tools/ComplianceHub';
+import LaunchGate from './components/LaunchGate';
+import { PAGE_DATA, DEFAULT_PAGE } from './constants';
+import { ArrowDown, Zap, ChevronRight, Play, Pause, Terminal, ArrowRight } from 'lucide-react';
 import { ScenarioManager } from './lib/scenario-manager';
-import { FinancialScenario, PageSection } from './types';
-import { TOOL_REGISTRY } from './lib/tool-registry';
-
-// --- SUB-COMPONENTS FOR CONTENT RENDERING ---
+import { PageSection, PageContent, FinancialScenario } from './types';
 
 const PageSectionRenderer: React.FC<{ section: PageSection; onNavigate: (path: string) => void }> = ({ section, onNavigate }) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+
   return (
-      <div className="py-20 border-b border-brand-800/30 last:border-0">
-          <div className="mb-12 text-center max-w-3xl mx-auto">
-              <h2 className="text-3xl font-heading font-bold text-white mb-6 tracking-tight">{section.title}</h2>
-              <p className="text-lg text-slate-400 leading-relaxed font-light">{section.content}</p>
+      <div className="py-16 md:py-32 border-b border-brand-800/30 last:border-0 relative px-4 md:px-0">
+          <div className="mb-12 md:mb-24 text-center max-w-4xl mx-auto">
+              <span className="text-[10px] md:text-[11px] font-extrabold text-brand-gold uppercase tracking-[0.5em] mb-4 md:mb-6 block animate-fade-up" style={{ animationDelay: '100ms' }}>Strategic Context</span>
+              <h2 className="text-3xl md:text-6xl font-heading font-extrabold text-white mb-6 md:mb-10 tracking-tighter leading-[1.1] animate-fade-up" style={{ animationDelay: '200ms' }}>
+                  {section.title}
+              </h2>
+              <div className="w-16 md:w-24 h-1 bg-brand-gold mx-auto mb-6 md:mb-10 rounded-full opacity-20 animate-fade-up" style={{ animationDelay: '300ms' }}></div>
+              <p className="text-base md:text-2xl text-white/40 leading-relaxed font-medium max-w-3xl mx-auto animate-fade-up" style={{ animationDelay: '400ms' }}>
+                  {section.content}
+              </p>
           </div>
 
           {section.type === 'cards' && section.items && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
                   {section.items.map((item, i) => (
                       <div 
                         key={i} 
                         onClick={() => item.link && onNavigate(item.link)}
-                        className={`bg-brand-900/50 backdrop-blur-sm border border-brand-800 p-8 rounded-2xl hover:border-brand-gold transition-all duration-300 hover:-translate-y-2 group shadow-xl ${item.link ? 'cursor-pointer' : ''}`}
+                        className={`flash-card p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] group transition-all duration-700 animate-fade-up ${item.link ? 'cursor-pointer' : ''}`}
+                        style={{ animationDelay: `${500 + i * 150}ms`, perspective: '1000px' }}
+                        onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            e.currentTarget.style.setProperty('--spotlight-x', `${x}px`);
+                            e.currentTarget.style.setProperty('--spotlight-y', `${y}px`);
+                            
+                            const rotateX = (y / rect.height - 0.5) * -10;
+                            const rotateY = (x / rect.width - 0.5) * 10;
+                            if (window.innerWidth > 768) {
+                                e.currentTarget.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = `rotateX(0deg) rotateY(0deg)`;
+                        }}
                       >
-                          <h3 className="text-xl font-bold text-white mb-4 group-hover:text-brand-gold transition-colors">{item.title}</h3>
-                          <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
-                          <div className={`mt-6 pt-4 border-t border-brand-800/50 flex items-center text-brand-gold text-xs font-bold uppercase tracking-widest transition-opacity ${item.link ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
-                              {item.link ? 'Open Tool' : 'Learn More'} <ArrowRight size={14} className="ml-2" />
+                          <div className="absolute top-0 right-0 p-6 md:p-10 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100 hidden md:block">
+                              <Zap className="text-brand-gold/40" size={36} />
+                          </div>
+                          <h3 className="text-xl md:text-3xl font-heading font-extrabold text-white mb-4 md:mb-6 group-hover:text-brand-gold transition-colors tracking-tight leading-tight uppercase">
+                              {item.title}
+                          </h3>
+                          <p className="text-white/50 text-sm md:text-lg leading-relaxed mb-6 md:mb-10 font-medium">
+                              {item.desc}
+                          </p>
+                          <div className={`pt-6 md:pt-8 border-t border-brand-800/50 flex items-center text-brand-gold text-[10px] md:text-[11px] font-extrabold uppercase tracking-[0.3em] transition-all duration-500`}>
+                              {item.link ? 'Deploy Ecosystem' : 'Examine Logic'} 
+                              <ChevronRight size={18} className="ml-2 group-hover:translate-x-3 transition-transform" />
                           </div>
                       </div>
                   ))}
               </div>
           )}
 
-          {section.type === 'form-contact' && <ContactCenter />}
-          {section.type === 'form-membership' && <MembershipApplication />}
-          {section.type === 'form-testimonial' && <Testimonials />}
-          {section.type === 'ai-analysis' && <InvestmentAnalyzer />}
+          {section.type === 'form-contact' && <div className="animate-fade-up" style={{ animationDelay: '500ms' }}><ContactCenter /></div>}
+          {section.type === 'form-membership' && <div className="animate-fade-up" style={{ animationDelay: '500ms' }}><MembershipApplication /></div>}
+          {section.type === 'form-testimonial' && <div className="animate-fade-up" style={{ animationDelay: '500ms' }}><Testimonials /></div>}
+          {section.type === 'ai-analysis' && <div className="animate-fade-up" style={{ animationDelay: '500ms' }}><InvestmentAnalyzer /></div>}
+          {section.type === 'compliance-hub' && <div className="animate-fade-up" style={{ animationDelay: '500ms' }}><ComplianceHub /></div>}
       </div>
   );
 };
 
 const App: React.FC = () => {
-  const [currentPath, setCurrentPath] = useState(() => {
-    try {
-        return window.location.hash.replace('#', '') || '/';
-    } catch (e) {
-        return '/';
-    }
-  });
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [currentPath, setCurrentPath] = useState(() => window.location.hash.replace('#', '') || '/');
   const [searchOpen, setSearchOpen] = useState(false);
-  const [isDark, setIsDark] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-  const [activeScenario, setActiveScenario] = useState<FinancialScenario>(ScenarioManager.getActiveScenario());
-  const [scenarios, setScenarios] = useState<FinancialScenario[]>(ScenarioManager.getScenarios());
-
-  const handleUpdateScenario = (updates: Partial<FinancialScenario>) => {
-    const fullUpdate = { ...activeScenario, ...updates };
-    const updated = ScenarioManager.updateScenario(fullUpdate);
-    setActiveScenario(updated);
-    setScenarios(ScenarioManager.getScenarios());
-  };
+  const [isDark, setIsDark] = useState(true);
+  const [offsetY, setOffsetY] = useState(0);
+  const [videoPlaying, setVideoPlaying] = useState(true);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark);
-  }, [isDark]);
+    if (sessionStorage.getItem('fc_authorized') === 'true') {
+        setIsAuthorized(true);
+    }
+  }, []);
+
+  const handleAuthorization = () => {
+    sessionStorage.setItem('fc_authorized', 'true');
+    setIsAuthorized(true);
+  };
+
+  const [activeScenario, setActiveScenario] = useState<FinancialScenario>(() => ScenarioManager.getActiveScenario());
+  const [allScenarios, setAllScenarios] = useState<FinancialScenario[]>(() => ScenarioManager.getScenarios());
+
+  const handleUpdateScenario = (updates: Partial<FinancialScenario>) => {
+    const updated = ScenarioManager.updateScenario({ ...activeScenario, ...updates });
+    setActiveScenario(updated);
+    setAllScenarios(ScenarioManager.getScenarios());
+  };
+
+  const handleSelectScenario = (id: string) => {
+    ScenarioManager.setActiveScenarioId(id);
+    const selected = ScenarioManager.getActiveScenario();
+    setActiveScenario(selected);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
         const totalScroll = document.documentElement.scrollTop;
         const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         setScrollProgress(windowHeight > 0 ? totalScroll / windowHeight : 0);
+        setOffsetY(window.pageYOffset);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+  
+  useEffect(() => {
+    window.document.documentElement.classList.toggle('dark', isDark);
+    window.document.documentElement.classList.toggle('light', !isDark);
+  }, [isDark]);
 
   useEffect(() => {
     const handleHashChange = () => {
-      try {
-        const path = window.location.hash.replace('#', '') || '/';
-        setCurrentPath(path);
-        window.scrollTo(0, 0);
-      } catch (e) {
-        // Fallback for environments where location access is restricted
-        console.warn("Hash access restricted", e);
-      }
+      setCurrentPath(window.location.hash.replace('#', '') || '/');
+      window.scrollTo(0, 0);
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
@@ -107,119 +148,30 @@ const App: React.FC = () => {
 
   const navigate = (path: string) => {
     setCurrentPath(path);
-    try {
-        window.location.hash = path;
-    } catch (e) {
-        console.warn("Navigation hash update failed:", e);
-    }
+    window.location.hash = path;
     window.scrollTo(0, 0);
   };
 
   const isPortal = currentPath.startsWith('/portal');
   const isDataTools = currentPath.startsWith('/data-tools');
-
-  const DataToolsLandingPage = () => (
-    <>
-      <section className="relative flex items-center h-[60vh] overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img src={PAGE_DATA['/data-tools'].image} alt="Data Tools" className="w-full h-full object-cover fixed-bg-effect" />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/80 to-transparent"></div>
-        </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 w-full pt-20">
-          <div className="max-w-4xl animate-fade-up">
-            <h1 className="text-6xl font-heading font-bold text-white leading-tight mb-4 drop-shadow-lg">Capital Investments Suite</h1>
-            <p className="text-xl text-slate-200 mb-10 max-w-2xl font-light">The most comprehensive analytical suite for institutional and private capital. Real-time modeling, risk assessment, and AI-driven insights.</p>
-          </div>
-        </div>
-      </section>
-      <div className="max-w-7xl mx-auto px-4 py-24 space-y-24">
-        <ScenarioDashboard scenario={ScenarioManager.getActiveScenario()} />
-        {ENTERPRISE_SECTIONS.map(section => (
-          <div key={section.id}>
-            <div className="flex items-center gap-6 mb-12">
-                <div className="h-px bg-brand-800 flex-1"></div>
-                <h2 className="text-3xl font-heading font-bold text-white text-center flex items-center gap-4">
-                    <section.icon className="text-brand-gold" size={32} /> {section.label.substring(3)}
-                </h2>
-                <div className="h-px bg-brand-800 flex-1"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {TOOL_REGISTRY.filter(t => t.category === section.id).map(tool => (
-                    <div key={tool.id} onClick={() => navigate(`/data-tools/${tool.category}/${tool.id}`)} className="bg-brand-900/40 p-8 rounded-2xl border border-brand-800/60 hover:border-brand-gold hover:bg-brand-900 transition-all group cursor-pointer shadow-lg backdrop-blur-sm">
-                        <h4 className="font-bold text-lg text-white mb-2 group-hover:text-brand-gold transition-colors">{tool.name}</h4>
-                        <p className="text-xs text-slate-400 leading-relaxed font-medium">{tool.description}</p>
-                    </div>
-                ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-
-  const ToolCategoryPage = ({ categoryId }: { categoryId: string }) => {
-      const category = ENTERPRISE_SECTIONS.find(c => c.id === categoryId);
-      const tools = TOOL_REGISTRY.filter(t => t.category === categoryId);
-      // Fetch specific image for this category if available, else fallback
-      const categoryData = PAGE_DATA[`/data-tools/${categoryId}`] || PAGE_DATA['/data-tools'];
-
-      if (!category) return <div>Category not found</div>;
-
-      return (
-        <>
-            <section className="relative flex items-center h-[50vh] overflow-hidden">
-                <div className="absolute inset-0 z-0">
-                    <img src={categoryData.image} alt={category.label} className="w-full h-full object-cover fixed-bg-effect" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/80 to-transparent"></div>
-                </div>
-                <div className="relative z-10 max-w-7xl mx-auto px-4 w-full pt-20">
-                    <div className="max-w-4xl animate-fade-up">
-                        <p className="text-brand-gold font-bold uppercase tracking-widest mb-4">Data Tools</p>
-                        <h1 className="text-5xl font-heading font-bold text-white drop-shadow-lg">{category.label.substring(3)}</h1>
-                    </div>
-                </div>
-            </section>
-            <div className="max-w-7xl mx-auto px-4 py-24">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {tools.map(tool => (
-                        <div key={tool.id} onClick={() => navigate(`/data-tools/${tool.category}/${tool.id}`)} className="bg-brand-900 p-8 rounded-2xl border border-brand-800 hover:border-brand-gold transition-all group cursor-pointer shadow-xl hover:-translate-y-2">
-                            <h3 className="text-xl font-bold text-white mb-3 group-hover:text-brand-gold">{tool.name}</h3>
-                            <p className="text-sm text-slate-400 leading-relaxed">{tool.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </>
-      );
-  };
-  
-  const renderDataTools = () => {
-    const pathParts = currentPath.split('/').filter(Boolean);
-    const categoryId = pathParts[1];
-    const toolId = pathParts[2];
-    
-    if (toolId) {
-      return <ToolRenderer 
-        toolId={toolId}
-        categoryId={categoryId}
-        scenario={activeScenario}
-        allScenarios={scenarios}
-        onUpdateScenario={handleUpdateScenario}
-      />;
-    }
-    if (categoryId) {
-      return <ToolCategoryPage categoryId={categoryId} />;
-    }
-    return <DataToolsLandingPage />;
-  };
-
-  const pageData = isDataTools ? (PAGE_DATA[currentPath] || PAGE_DATA['/data-tools']) : (PAGE_DATA[currentPath] || DEFAULT_PAGE);
   const isHome = currentPath === '/';
 
+  const pageData = useMemo((): PageContent => PAGE_DATA[currentPath] || DEFAULT_PAGE, [currentPath]);
+
+  if (!isAuthorized) {
+    return <LaunchGate onAuthorize={handleAuthorization} />;
+  }
+
   return (
-    <div className="flex flex-col min-h-screen font-sans selection:bg-brand-gold selection:text-brand-900 dark bg-brand-950 text-slate-100">
+    <div className="flex flex-col min-h-screen font-sans bg-brand-950 text-white overflow-x-hidden">
+      <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute top-[-15%] left-[-5%] w-[60%] h-[60%] bg-brand-700/5 dark:bg-brand-gold/5 rounded-full blur-[160px] animate-glow"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-brand-500/10 dark:bg-brand-gold/5 rounded-full blur-[160px] animate-glow delay-1000"></div>
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] dark:opacity-[0.08] contrast-125 mix-blend-multiply dark:mix-blend-overlay"></div>
+      </div>
+
       <div 
-        className="fixed top-0 left-0 h-1 bg-brand-gold z-[100] transition-all duration-100 ease-out box-shadow-glow"
+        className="fixed top-0 left-0 h-1 bg-brand-gold z-[100] transition-all duration-150 ease-out shadow-[0_0_20px_rgba(212,175,55,0.4)]"
         style={{ width: `${scrollProgress * 100}%` }}
       ></div>
 
@@ -233,101 +185,84 @@ const App: React.FC = () => {
 
       <SearchCommand isOpen={searchOpen} onClose={() => setSearchOpen(false)} onNavigate={navigate} />
 
-      <main className="flex-grow">
-        {isPortal ? <Portal onNavigate={navigate} /> : 
-         isDataTools ? renderDataTools() : (
-            <>
-                {/* Cinematic Hero Section */}
-                <section className={`relative flex items-center ${isHome ? 'h-screen' : 'h-[60vh]'} overflow-hidden group`}>
-                    <div className="absolute inset-0 z-0">
-                        {isHome && pageData.heroVideo ? (
-                            <video 
-                                autoPlay 
-                                loop 
-                                muted 
-                                playsInline 
-                                poster={pageData.image} 
-                                className="w-full h-full object-cover opacity-60"
-                            >
-                                <source src={pageData.heroVideo} type="video/mp4" />
-                            </video>
-                        ) : (
-                            <img 
-                                src={pageData.image} 
-                                alt={pageData.title} 
-                                className="w-full h-full object-cover transform scale-105 group-hover:scale-100 transition-transform duration-[20s] ease-linear" 
-                            />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-brand-950 via-brand-950/60 to-brand-900/30"></div>
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
-                    </div>
-
-                    <div className="relative z-10 max-w-7xl mx-auto px-4 w-full pt-12">
-                        <div className="max-w-5xl animate-fade-up">
-                            {pageData.subtitle && (
-                                <p className="text-brand-gold font-bold uppercase tracking-[0.2em] mb-4 text-sm md:text-base animate-fade-in delay-100">{pageData.subtitle}</p>
-                            )}
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-heading font-bold text-white leading-[1.1] mb-8 tracking-tight drop-shadow-2xl">
-                                {pageData.title}
-                            </h1>
-                            <p className="text-xl md:text-2xl text-slate-200 mb-12 max-w-2xl font-light leading-relaxed drop-shadow-md">
-                                {pageData.description}
-                            </p>
-                            {isHome && (
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <button onClick={() => navigate('/services')} className="px-8 py-4 bg-brand-gold text-brand-900 font-bold rounded-full hover:bg-white transition-all shadow-xl hover:shadow-brand-gold/20 flex items-center justify-center gap-2">
-                                        Explore Solutions <ArrowRight size={18}/>
-                                    </button>
-                                    <button onClick={() => navigate('/contact')} className="px-8 py-4 bg-brand-950/50 backdrop-blur-md text-white font-bold rounded-full border border-white/20 hover:bg-brand-900 hover:border-brand-gold transition-all flex items-center justify-center gap-2">
-                                        Partner With Us
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Scroll Indicator */}
-                    {isHome && (
-                        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce opacity-70">
-                            <span className="text-[10px] uppercase tracking-widest text-slate-400">Scroll</span>
-                            <ArrowDown size={20} className="text-brand-gold"/>
-                        </div>
-                    )}
-                </section>
-
-                {/* Main Content Area */}
-                <div className="max-w-7xl mx-auto px-4 pt-12 pb-32">
-                    {pageData.sections && pageData.sections.length > 0 ? (
-                        pageData.sections.map((section, idx) => (
-                            <PageSectionRenderer key={idx} section={section} onNavigate={navigate} />
-                        ))
+      <main className="flex-grow relative z-10">
+            <section className={`relative flex items-center ${isHome ? 'h-[100dvh]' : 'h-[60vh]'} overflow-hidden`}>
+                <div className="absolute inset-0 z-0 bg-brand-950">
+                    {isHome && pageData.heroVideo ? (
+                         <video 
+                            ref={videoRef} autoPlay loop muted playsInline 
+                            className="w-full h-full object-cover opacity-60 scale-105"
+                            poster={pageData.image}
+                            style={{ transform: `translateY(${offsetY * 0.15}px) scale(1.1)` }}
+                         > <source src={pageData.heroVideo} type="video/mp4" /> </video>
                     ) : (
-                        // Fallback for pages without defined sections
-                        <div className="py-20 text-center">
-                            <p className="text-slate-500 italic">Content pending institutional review.</p>
-                        </div>
+                        <div 
+                            className="w-full h-full opacity-60 bg-cover bg-center bg-no-repeat"
+                            style={{ 
+                                backgroundImage: `url(${pageData.image || DEFAULT_PAGE.image})`,
+                                transform: `translateY(${offsetY * 0.15}px) scale(1.1)`
+                            }}
+                        />
                     )}
-                    
-                    {/* Special Components for Home Page */}
-                    {isHome && (
-                        <>
-                            <div className="py-20">
-                                <Testimonials />
-                            </div>
-                            <div className="py-20">
-                                <ContactCenter />
-                            </div>
-                        </>
-                    )}
-                    {/* Special Components for Contact Page */}
-                    {currentPath === '/contact' && (
-                         <div className="py-10">
-                            <ContactCenter />
-                        </div>
-                    )}
+                    <div className="absolute inset-0 bg-gradient-to-b from-brand-950/60 via-brand-950/20 to-brand-950"></div>
+                    <div className="absolute inset-0 bg-brand-950/40 backdrop-brightness-[0.8]"></div>
                 </div>
-            </>
-        )}
+
+                <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full pt-12 md:pt-24">
+                    <div className="max-w-5xl">
+                        {pageData.subtitle && (
+                            <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-10 animate-fade-up">
+                                <div className="h-px w-10 md:w-16 bg-brand-gold"></div>
+                                <p className="text-brand-gold font-heading font-extrabold uppercase tracking-[0.4em] md:tracking-[0.5em] text-[10px] md:text-sm text-glow">{pageData.subtitle}</p>
+                            </div>
+                        )}
+                        <h1 className={`font-heading font-black leading-[0.9] mb-8 md:mb-14 tracking-tighter text-white text-5xl md:text-8xl lg:text-9xl animate-fade-up`} style={{ animationDelay: '150ms' }}>
+                           <span className="animate-reveal-text inline-block">{pageData.title.split(' ').slice(0, -1).join(' ')}</span><br/>
+                           <span className="text-brand-gold animate-reveal-text inline-block" style={{ animationDelay: '300ms' }}>{pageData.title.split(' ').slice(-1).join(' ')}.</span>
+                        </h1>
+                        <p className="text-base md:text-2xl text-white/60 mb-10 md:mb-20 max-w-2xl font-medium leading-relaxed animate-fade-up" style={{ animationDelay: '450ms' }}>
+                            {pageData.description}
+                        </p>
+                        
+                        {isHome && (
+                            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 animate-fade-up" style={{ animationDelay: '600ms' }}>
+                                <button 
+                                    onClick={() => navigate('/portal')} 
+                                    className="group relative px-10 md:px-12 py-5 md:py-6 bg-brand-gold text-brand-950 font-heading font-black rounded-2xl flex items-center justify-center gap-4 transition-all hover:bg-white shadow-[0_20px_50px_rgba(212,175,55,0.4)] text-[10px] md:text-[11px] uppercase tracking-[0.4em] overflow-hidden w-full sm:w-auto"
+                                >
+                                    <span className="relative z-10">Access Terminal</span>
+                                    <ArrowRight size={20} className="relative z-10 group-hover:translate-x-2 transition-transform" />
+                                </button>
+                                <button 
+                                    onClick={() => navigate('/services')} 
+                                    className="px-10 md:px-12 py-5 md:py-6 glass border border-white/10 text-white font-heading font-black rounded-2xl flex items-center justify-center gap-4 hover:bg-white/10 transition-all text-[10px] md:text-[11px] uppercase tracking-[0.4em] w-full sm:w-auto"
+                                >
+                                    Our Services
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {isHome && (
+                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 animate-bounce opacity-40">
+                        <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.5em] text-white">Explore</span>
+                        <ArrowDown size={18} />
+                    </div>
+                )}
+            </section>
+
+            <div className="relative z-20 -mt-16 md:-mt-32 max-w-7xl mx-auto px-4 md:px-12 pb-32 md:pb-56">
+                {isPortal ? ( <Portal onNavigate={navigate} /> ) : 
+                 isDataTools ? ( <ToolPageTemplate currentPath={currentPath} onNavigate={navigate} scenario={activeScenario} allScenarios={allScenarios} onUpdateScenario={handleUpdateScenario} /> ) : 
+                 (
+                    <>
+                        {pageData.sections?.map((section, idx) => (
+                            <PageSectionRenderer key={idx} section={section} onNavigate={navigate} />
+                        ))}
+                    </>
+                )}
+            </div>
       </main>
 
       <Footer onNavigate={navigate} />

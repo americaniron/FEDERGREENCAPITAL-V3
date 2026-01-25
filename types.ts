@@ -21,7 +21,7 @@ export interface PageContent {
 export interface PageSection {
   title: string;
   content: string;
-  type?: 'text' | 'cards' | 'form-contact' | 'form-membership' | 'form-testimonial' | 'list' | 'ai-analysis' | 'tts-article';
+  type?: 'text' | 'cards' | 'form-contact' | 'form-membership' | 'form-testimonial' | 'list' | 'ai-analysis' | 'tts-article' | 'compliance-hub' | 'document-analyzer' | 'market-commentary';
   items?: { title: string; desc: string; icon?: any; link?: string }[];
 }
 
@@ -80,6 +80,13 @@ export interface FinancialScenario {
   refiYear: number;
   refiRate: number;
   refiLtv: number;
+
+  // Business Specifics (New for Plan Builder)
+  cac?: number;
+  ltv?: number;
+  churnRate?: number;
+  grossMargin?: number;
+  paybackMonths?: number;
 }
 
 export interface ToolResult {

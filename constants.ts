@@ -5,8 +5,39 @@ import {
   Users, Zap, Leaf, Landmark, Factory, Plane, Cpu, 
   Bitcoin, FileText, Newspaper, Phone, Database, Scale, Calculator, Receipt, Shield
 } from 'lucide-react';
+import { TOOL_REGISTRY } from './lib/tool-registry';
 
 export const SITE_NAME = "Federgreen Capital";
+
+const DATA_TOOL_CATEGORIES = [
+  { label: 'Financial Analysis', id: 'financial-analysis' },
+  { label: 'Tax & Reserves', id: 'tax-reserves' },
+  { label: 'Investment Analysis', id: 'investment-analysis' },
+  { label: 'Property Metrics', id: 'property-metrics' },
+  { label: 'Advanced Metrics', id: 'advanced-metrics' },
+  { label: 'Cost & Expenses', id: 'cost-expenses' },
+  { label: 'Tax & Gains', id: 'tax-gains' },
+  { label: 'Portfolio & Comparison', id: 'portfolio' },
+  { label: 'Market Analysis', id: 'market' },
+  { label: 'Business Analysis', id: 'business' },
+  { label: 'Compliance (KYC/AML)', id: 'compliance' },
+];
+
+const dataToolsSubItems = DATA_TOOL_CATEGORIES.map(category => {
+    const tools = TOOL_REGISTRY.filter(tool => tool.category === category.id);
+    const firstToolPath = tools.length > 0 
+        ? `/data-tools/${category.id}/${tools[0].id}` 
+        : `/data-tools/${category.id}`;
+        
+    return {
+        label: category.label,
+        path: firstToolPath,
+        subItems: tools.map(tool => ({
+            label: tool.name,
+            path: `/data-tools/${category.id}/${tool.id}`
+        }))
+    };
+});
 
 export const NAVIGATION: NavItem[] = [
   { label: 'Home', path: '/' },
@@ -15,19 +46,7 @@ export const NAVIGATION: NavItem[] = [
     label: 'Data Tools',
     path: '/data-tools',
     icon: Database,
-    subItems: [
-      { label: 'Financial Analysis', path: '/data-tools/financial-analysis' },
-      { label: 'Tax & Reserves', path: '/data-tools/tax-reserves' },
-      { label: 'Investment Analysis', path: '/data-tools/investment-analysis' },
-      { label: 'Property Metrics', path: '/data-tools/property-metrics' },
-      { label: 'Advanced Metrics', path: '/data-tools/advanced-metrics' },
-      { label: 'Cost & Expenses', path: '/data-tools/cost-expenses' },
-      { label: 'Tax & Gains', path: '/data-tools/tax-gains' },
-      { label: 'Portfolio & Comparison', path: '/data-tools/portfolio' },
-      { label: 'Market Analysis', path: '/data-tools/market' },
-      { label: 'Business Analysis', path: '/data-tools/business' },
-      { label: 'Compliance (KYC/AML)', path: '/data-tools/compliance' },
-    ]
+    subItems: dataToolsSubItems
   },
   {
     label: 'Private Memberships',
@@ -36,6 +55,7 @@ export const NAVIGATION: NavItem[] = [
       { label: 'Global Private Access', path: '/private-memberships/global-private-access' },
       { label: 'Global Capital Access', path: '/private-memberships/global-capital-access' },
       { label: 'Founders Circle', path: '/private-memberships/founders-circle' },
+      { label: 'Compliance Hub', path: '/compliance' }
     ]
   },
   {
@@ -111,322 +131,345 @@ export const NAVIGATION: NavItem[] = [
   { label: 'Contact', path: '/contact' }
 ];
 
-export const TESTIMONIALS = [
-    {
-        id: 1,
-        name: "James Sterling",
-        role: "CEO, Sterling Tech Ventures",
-        text: "Federgreen Capital provided the strategic bridge we needed to enter the Asian markets. Their due diligence is unmatched in the industry.",
-        rating: 5,
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop"
-    },
-    {
-        id: 2,
-        name: "Elena Rostova",
-        role: "Managing Director, GreenEarth Holdings",
-        text: "The secured depositor programs offered stability in a volatile market. A partner that truly understands risk mitigation.",
-        rating: 5,
-        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200&auto=format&fit=crop"
-    },
-    {
-        id: 3,
-        name: "Marcus Chen",
-        role: "Founder, Apex Logistics",
-        text: "Access to the Founders Circle has been transformative. The network value alone exceeds the capital investment.",
-        rating: 4,
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop"
-    }
-];
-
-export const MEMBERSHIP_TIERS = [
-    {
-        name: "Global Private Access",
-        price: "$5,000",
-        period: "per year",
-        initiation: "$2,500 one-time",
-        features: [
-            "Access to Global Deal Flow",
-            "Quarterly Market Reports",
-            "Invitation to Annual Summit",
-            "Basic Due Diligence Support"
-        ],
-        highlight: false
-    },
-    {
-        name: "Global Capital Access",
-        price: "$15,000",
-        period: "per year",
-        initiation: "$5,000 one-time",
-        features: [
-            "All Private Access Benefits",
-            "Direct Access to Lenders",
-            "Priority Project Financing",
-            "Dedicated Relationship Manager",
-            "Monthly Strategy Calls"
-        ],
-        highlight: true
-    },
-    {
-        name: "Founders Circle",
-        price: "$50,000",
-        period: "per year",
-        initiation: "$10,000 one-time",
-        features: [
-            "Full Capital Access Benefits",
-            "Board Advisory Services",
-            "Co-Investment Rights",
-            "Private Retreats & Networking",
-            "Unlimited Due Diligence"
-        ],
-        highlight: false
-    }
-];
-
 export const PAGE_DATA: Record<string, PageContent> = {
   '/': {
     title: 'Defining the Future of Capital',
     subtitle: 'Strategic Investment & Global Advisory',
     description: 'Federgreen Capital bridges the gap between ambition and achievement. We provide elite financial solutions, private membership access, and strategic foresight for the modern investor.',
     image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop',
-    heroVideo: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4',
+    heroVideo: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4', 
     sections: [
       {
         title: 'Featured Opportunities',
         content: 'Exclusive access to high-yield global markets.',
         type: 'cards',
         items: [
-          { title: 'Global Tech Fund', desc: 'Investing in AI and Quantum Computing infrastructure. Projected IRR 18-22%.' },
-          { title: 'Green Energy Bonds', desc: 'Sustainable returns from renewable energy projects in Europe. A-Rated security.' },
-          { title: 'Luxury Real Estate', desc: 'Prime asset acquisition in emerging metropolitan hubs. Value-add strategy.' }
+          { title: 'Global Tech Fund', desc: 'Investing in Quantum Computing infrastructure. Projected IRR 18-22%.', link: '/sectors/technology' },
+          { title: 'Green Energy Bonds', desc: 'Sustainable returns from renewable energy projects in Europe. A-Rated security.', link: '/sectors/renewable-energy' },
+          { title: 'Luxury Real Estate', desc: 'Prime asset acquisition in emerging metropolitan hubs. Value-add strategy.', link: '/sectors/real-estate' }
         ]
-      },
-      {
-        title: 'Our Philosophy',
-        content: 'We believe that true wealth is built on a foundation of rigorous analysis, strategic foresight, and unwavering integrity. Our approach combines traditional financial wisdom with innovative capital structures.',
-        type: 'text'
       }
     ]
   },
   '/about-us': {
     title: 'A Legacy of Excellence',
-    description: 'Founded on the principles of integrity, innovation, and insight, Federgreen Capital has evolved into a global powerhouse in strategic investment and advisory.',
-    image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2070&auto=format&fit=crop',
+    description: 'Founded on the principles of integrity, innovation, and insight, Federgreen Capital has evolved into a global powerhouse in strategic investment.',
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=2071&auto=format&fit=crop',
+    sections: [
+        {
+            title: 'Market Intelligence',
+            content: 'Access our global data hub for geospacial and socio-economic due diligence.',
+            type: 'cards',
+            items: [
+                { title: 'Data Hub', desc: 'Connect to real-time global datasets.', link: '/data-tools/market/data-hub' },
+                { title: 'API Configuration', desc: 'Manage institutional data keys.', link: '/data-tools/market/api-settings' }
+            ]
+        }
+    ]
+  },
+  '/contact': {
+      title: 'Contact Concierge',
+      description: 'Begin your journey with Federgreen Capital.',
+      image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2032&auto=format&fit=crop',
+      sections: [{ title: 'Get in Touch', content: 'Our team is available 24/7.', type: 'form-contact' }]
+  },
+  '/data-tools': { 
+    title: 'Architect Suite', 
+    description: 'The most comprehensive analytical suite for institutional and private capital.', 
+    image: 'https://images.unsplash.com/photo-1551288049-bbbda5366991?q=80&w=2070&auto=format&fit=crop' 
+  },
+  '/private-memberships': { 
+    title: 'Private Memberships', 
+    description: 'Exclusive access to institutional deal flow.', 
+    image: 'https://images.unsplash.com/photo-1560669882-c20e32718428?q=80&w=2070&auto=format&fit=crop', 
+    sections: [
+        { title: 'Join the Elite', content: 'Apply for membership below.', type: 'form-membership' },
+        {
+            title: 'Member Data Tools',
+            content: 'Advanced portfolio and asset analytics for private members.',
+            type: 'cards',
+            items: [
+                { title: 'Portfolio Performance', desc: 'Aggregate holdings analysis.', link: '/data-tools/portfolio/portfolio-performance' },
+                { title: 'Multi-Property Comparison', desc: 'Side-by-side analytical matrix.', link: '/data-tools/portfolio/multi-prop-compare' },
+                { title: 'Rental Growth Projector', desc: 'Market-indexed escalation modeling.', link: '/data-tools/portfolio/rental-growth-proj' },
+                { title: 'Leverage Analysis', desc: 'LTV impact on portfolio IRR.', link: '/data-tools/portfolio/leverage-analysis' }
+            ]
+        },
+        {
+            title: 'Institutional Compliance',
+            content: 'Mandatory KYC/AML intake and risk oversight.',
+            type: 'cards',
+            items: [
+                { title: 'Compliance Hub', desc: 'Execute regulatory verification.', link: '/compliance' }
+            ]
+        }
+    ] 
+  },
+  '/services': { 
+    title: 'Elite Services', 
+    description: 'Bespoke financial solutions for complex global landscapes.', 
+    image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+        {
+            title: 'Investment & Deal Analysis',
+            content: 'Deep-reasoning tools for deal structuring and valuation.',
+            type: 'cards',
+            items: [
+                { title: 'Venture Validator', desc: 'Business model valuation.', link: '/data-tools/business/business-valuation-tool' },
+                { title: 'Fix & Flip ROI', desc: 'Short-term rehab modeling.', link: '/data-tools/investment-analysis/fix-flip-roi' },
+                { title: 'BRRRR Tracker', desc: 'Refinance and repeat analyzer.', link: '/data-tools/investment-analysis/brrrr-tracker' },
+                { title: 'Business Plan Builder', desc: 'Strategic drafting suite.', link: '/data-tools/business/business-planner' }
+            ]
+        }
+    ]
+  },
+  '/services/analysis': { 
+    title: 'Advanced Analysis', 
+    description: 'Data-driven insights for sovereign-level investment.', 
+    image: 'https://images.unsplash.com/photo-1551288049-bbbda5366991?q=80&w=2070&auto=format&fit=crop', 
+    sections: [{ title: 'Strategy Engine', content: 'Run a preliminary analysis below.', type: 'ai-analysis' }] 
+  },
+  '/financing': { 
+    title: 'Capital Solutions', 
+    description: 'Flexible financing for the evolving economic landscape.', 
+    image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=2071&auto=format&fit=crop',
+    sections: [
+        {
+            title: 'Financial Calculators',
+            content: 'Institutional-grade modeling for debt and asset acquisition.',
+            type: 'cards',
+            items: [
+                { title: 'Mortgage Calculator', desc: 'P&I payment modeling.', link: '/data-tools/financial-analysis/mortgage-calc' },
+                { title: 'Amortization Schedule', desc: 'Full reduction modeling.', link: '/data-tools/advanced-metrics/amort-schedule' },
+                { title: 'DSCR Analysis', desc: 'Debt coverage modeling.', link: '/data-tools/financial-analysis/dscr' },
+                { title: 'LTV / LTC Calculator', desc: 'Asset exposure analytics.', link: '/data-tools/property-metrics/ltv' },
+                { title: 'HELOC Calculator', desc: 'Line of credit modeling.', link: '/data-tools/property-metrics/heloc-calc' },
+                { title: 'Refi Break-Even', desc: 'Cost recovery analysis.', link: '/data-tools/advanced-metrics/refi-be' }
+            ]
+        }
+    ]
+  },
+  '/compliance': {
+      title: 'Compliance Hub',
+      description: 'Institutional KYC/AML intake and risk categorization.',
+      image: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2232&auto=format&fit=crop',
+      sections: [{ title: 'Regulatory Node', content: 'Execute mandatory intake protocol.', type: 'compliance-hub' }]
+  },
+  '/sectors/real-estate': {
+    title: 'Strategic Real Estate Acquisition',
+    subtitle: 'Global Prime Asset Management',
+    description: 'Federgreen Capital specializes in high-value real estate acquisitions across emerging metropolitan hubs. We leverage global data for precision valuation and risk-mitigated returns.',
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop',
     sections: [
       {
-        title: 'Our Mission',
-        content: 'To empower visionary investors and enterprises with the capital, strategy, and network required to shape the future.',
-        type: 'text'
-      },
-      {
-        title: 'Leadership',
-        content: 'Guided by industry veterans with decades of experience across Wall Street, London, and Asian markets.',
+        title: 'Asset Classes',
+        content: 'Our portfolio spans across diverse high-yield sectors.',
         type: 'cards',
         items: [
-            { title: 'Executive Board', desc: 'Comprised of former C-suite executives from Fortune 500 financial institutions.' },
-            { title: 'Global Advisors', desc: 'A network of regional specialists providing on-the-ground intelligence.' },
-            { title: 'Research Team', desc: 'Dedicated analysts utilizing proprietary AI and data models.' }
+          { title: 'Prime Residential', desc: 'Luxury metropolitan developments and multi-family assets.', link: '/data-tools/property-metrics/comparables' },
+          { title: 'Industrial Logistics', desc: 'Strategically located distribution hubs and micro-fulfillment centers.', link: '/data-tools/market/data-hub' },
+          { title: 'Hospitality Portfolio', desc: 'Boutique hotels and high-end resort developments in global destinations.', link: '/services/analysis' }
         ]
       }
     ]
   },
-  
-  // --- PRIVATE MEMBERSHIPS ---
-  '/private-memberships': {
-    title: 'Private Memberships',
-    description: 'Exclusive access to deal flow, strategic networking, and elite capital resources.',
-    image: 'https://images.unsplash.com/photo-1560669882-c20e32718428?q=80&w=2070&auto=format&fit=crop',
-    sections: [{ title: 'Join the Elite', content: 'Apply for membership below.', type: 'form-membership' }]
-  },
-  '/private-memberships/global-private-access': {
-    title: 'Global Private Access',
-    description: 'Your gateway to international markets and exclusive deal flow.',
-    image: 'https://images.unsplash.com/photo-1540961665-22765870f7d4?q=80&w=2070&auto=format&fit=crop',
-    sections: [{ title: 'Membership Application', content: 'Secure your place in the Global Private Access tier.', type: 'form-membership' }]
-  },
-  '/private-memberships/global-capital-access': {
-    title: 'Global Capital Access',
-    description: 'Direct lines to institutional lenders and priority project financing.',
-    image: 'https://images.unsplash.com/photo-1610375461246-d42404005f3b?q=80&w=2070&auto=format&fit=crop',
-    sections: [{ title: 'Upgrade to Capital Access', content: 'Unlock direct lender relationships.', type: 'form-membership' }]
-  },
-  '/private-memberships/founders-circle': {
-    title: 'Founders Circle',
-    description: 'The pinnacle of access. Board advisory, co-investment rights, and private retreats.',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop',
-    sections: [{ title: 'Apply for Founders Circle', content: 'Strictly limited to 50 members worldwide.', type: 'form-membership' }]
-  },
-
-  // --- SERVICES ---
-  '/services': {
-    title: 'Elite Financial Services',
-    description: 'Bespoke solutions for complex financial landscapes. From capital advisory to risk mitigation, we serve as your strategic partner.',
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070&auto=format&fit=crop',
+  '/sectors/technology': {
+    title: 'Frontier Technology Infrastructure',
+    subtitle: 'Capital for the Digital Renaissance',
+    description: 'We invest in the foundational technologies of tomorrow, focusing on AI infrastructure, quantum computing nodes, and sovereign-grade cybersecurity ecosystems.',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop',
     sections: [
-        { 
-            title: 'Our Expertise', 
-            content: 'Comprehensive financial services.', 
-            type: 'cards', 
-            items: [{title: 'Advisory', desc: 'Strategic Guidance'}, {title: 'Analysis', desc: 'Deep Dive Data'}] 
-        },
-        {
-            title: 'Investment & Deal Analysis',
-            content: 'Leverage our proprietary algorithms to validate your investment thesis.',
-            type: 'cards',
-            items: [
-                { title: 'Deal Analyzer', desc: 'Comprehensive multi-unit and commercial analysis.', link: '/data-tools/investment-analysis/multi-unit-analyzer' },
-                { title: 'Business Valuation', desc: 'EBITDA multiples and DCF valuation modeling.', link: '/data-tools/business/business-valuation-tool' },
-                { title: 'Market Intelligence', desc: 'Global geospacial and demographic data.', link: '/data-tools/market/data-hub' }
-            ]
-        }
+      {
+        title: 'Strategic Tech Verticals',
+        content: 'Deploying capital into high-growth digital infrastructure.',
+        type: 'cards',
+        items: [
+          { title: 'Quantum Computing', desc: 'Hardware and infrastructure for the next generation of encryption.', link: '/services/analysis' },
+          { title: 'Sovereign AI', desc: 'Localized LLM infrastructure and data sovereignty solutions.', link: '/data-tools/business/business-planner' },
+          { title: 'FinTech Nodes', desc: 'Next-gen global payment rails and decentralized liquidity pools.', link: '/financing/new-world-of-finance' }
+        ]
+      }
     ]
   },
-  '/services/capital-advisory': {
-    title: 'Capital Advisory',
-    description: 'Structuring the optimal capital stack for growth and stability.',
-    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/services/strategy': {
-    title: 'Strategic Planning',
-    description: 'Long-term roadmaps for market entry and expansion.',
-    image: 'https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/services/analysis': {
-    title: 'Advanced Analysis',
-    description: 'Data-driven insights using proprietary AI models.',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop',
-    sections: [{ title: 'AI Analyst', content: 'Run a preliminary analysis below.', type: 'ai-analysis' }]
-  },
-  '/services/risk-mitigation': {
-    title: 'Risk Mitigation',
-    description: 'Hedging strategies to protect assets in volatile markets.',
-    image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=2076&auto=format&fit=crop'
-  },
-  '/services/secured-depositor-programs': {
-    title: 'Secured Depositor Programs',
-    description: 'High-yield, asset-backed deposit structures for institutional capital.',
-    image: 'https://images.unsplash.com/photo-1565514020176-dbf22384914e?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/services/citizenship-by-investment': {
-    title: 'Citizenship by Investment',
-    description: 'Global mobility solutions for high-net-worth individuals.',
-    image: 'https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?q=80&w=2064&auto=format&fit=crop'
-  },
-  '/services/scaling-businesses': {
-    title: 'Scaling Businesses',
-    description: 'Operational and financial scaffolding for rapid growth phases.',
-    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/services/high-rois-low-risk': {
-    title: 'High ROI / Low Risk',
-    description: 'Asymmetric return profiles through arbitrage and secured lending.',
-    image: 'https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/services/due-diligence': {
-    title: 'Due Diligence',
-    description: 'Rigorous verification processes for investments and partnerships.',
-    image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/services/due-diligence/security-checks': {
-    title: 'Security Checks & KYC',
-    description: 'Background verification and AML screening.',
-    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/services/due-diligence/third-party-valuations': {
-    title: 'Third-Party Valuations',
-    description: 'Independent appraisals for accurate asset pricing.',
-    image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2072&auto=format&fit=crop'
-  },
-  '/services/due-diligence/feasibility-studies': {
-    title: 'Feasibility Studies',
-    description: 'Technical and economic viability assessments for large projects.',
-    image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2071&auto=format&fit=crop'
-  },
-
-  // --- SECTORS ---
-  '/sectors': {
-    title: 'Industry Expertise',
-    description: 'Deep domain knowledge across high-growth verticals.',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop'
-  },
-  '/sectors/real-estate': { title: 'Real Estate', description: 'Commercial, industrial, and residential portfolio management.', image: 'https://images.unsplash.com/photo-1480074568708-e7b720bb6fce?q=80&w=2070&auto=format&fit=crop' },
-  '/sectors/technology': { title: 'Technology', description: 'Investing in the infrastructure of the future.', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop' },
-  '/sectors/health': { title: 'Health & Biotech', description: 'Life sciences and healthcare innovation.', image: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?q=80&w=2032&auto=format&fit=crop' },
-  '/sectors/sports': { title: 'Sports Management', description: 'Franchise valuation and stadium financing.', image: 'https://images.unsplash.com/photo-1471295253337-3ceaaedca402?q=80&w=2068&auto=format&fit=crop' },
-  '/sectors/aerospace': { title: 'Aerospace', description: 'Defense, logistics, and commercial aviation.', image: 'https://images.unsplash.com/photo-1517976487492-5750f3195933?q=80&w=2070&auto=format&fit=crop' },
-  '/sectors/renewable-energy': { title: 'Renewable Energy', description: 'Sustainable power generation and storage.', image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?q=80&w=2070&auto=format&fit=crop' },
-  '/sectors/film-entertainment': { title: 'Film & Entertainment', description: 'Production financing and IP monetization.', image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop' },
-  '/sectors/sustainability': { title: 'Sustainability', description: 'ESG-focused investment vehicles.', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2013&auto=format&fit=crop' },
-  '/sectors/mining': { title: 'Mining & Resources', description: 'Extraction and processing of critical minerals.', image: 'https://images.unsplash.com/photo-1515266591878-5a146e9f0994?q=80&w=2070&auto=format&fit=crop' },
-  '/sectors/food-beverage': { title: 'Food & Beverage', description: 'Supply chain, production, and hospitality.', image: 'https://images.unsplash.com/photo-1625246188056-b748d554b473?q=80&w=2070&auto=format&fit=crop' },
-  '/sectors/manufacturing': { title: 'Manufacturing', description: 'Industrial automation and production.', image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop' },
-  '/sectors/fashion-beauty': { title: 'Fashion & Beauty', description: 'Luxury brands and retail innovation.', image: 'https://images.unsplash.com/photo-1490481651871-6188e73f6c7c?q=80&w=2070&auto=format&fit=crop' },
-
-  // --- FINANCING ---
-  '/financing': {
-    title: 'Capital Solutions',
-    description: 'Flexible financing structures tailored to your unique requirements.',
-    image: 'https://images.unsplash.com/photo-1611974765270-ca12586343bb?q=80&w=2070&auto=format&fit=crop',
+  '/sectors/health': {
+    title: 'Global Healthcare Innovation',
+    subtitle: 'Biotech & Medical Infrastructure',
+    description: 'Driving medical advancement through strategic investment in biotechnology, precision diagnostics, and world-class specialized medical facilities.',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop',
     sections: [
-        {
-            title: 'Instruments',
-            content: 'A diverse array of funding mechanisms.',
-            type: 'cards',
-            items: [
-                { title: 'Private Debt', desc: 'Senior and mezzanine debt facilities.' },
-                { title: 'Equity Injection', desc: 'Growth capital for scaling enterprises.' },
-                { title: 'Asset-Based Lending', desc: 'Liquidity against verified assets.' }
-            ]
-        },
-        {
-            title: 'Financial Calculators',
-            content: 'Model your debt service and capital costs with our institutional-grade tools.',
-            type: 'cards',
-            items: [
-                { title: 'Mortgage Calculator', desc: 'Standard principal and interest payment modeling.', link: '/data-tools/financial-analysis/mortgage-calc' },
-                { title: 'DSCR Analysis', desc: 'Debt Service Coverage Ratio for commercial lending.', link: '/data-tools/financial-analysis/dscr' },
-                { title: 'Amortization Schedules', desc: 'Full monthly principal and interest breakdown.', link: '/data-tools/advanced-metrics/amort-schedule' }
-            ]
-        }
+      {
+        title: 'Medical Verticals',
+        content: 'Investing in the future of human longevity.',
+        type: 'cards',
+        items: [
+          { title: 'Biotechnology', desc: 'Therapeutic innovations and precision medicine platforms.', link: '/services/analysis' },
+          { title: 'Medical Hubs', desc: 'Developing specialized healthcare real estate and regional centers.', link: '/sectors/real-estate' },
+          { title: 'Diagnostics AI', desc: 'Early detection systems powered by advanced neural networks.', link: '/sectors/technology' }
+        ]
+      }
     ]
   },
-  '/financing/debt': { title: 'Private Debt', description: 'Senior secured and mezzanine financing.', image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2072&auto=format&fit=crop' },
-  '/financing/equity': { title: 'Equity Capital', description: 'Growth equity and venture funding.', image: 'https://images.unsplash.com/photo-1611974765270-ca12586343bb?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/hybrid': { title: 'Hybrid Instruments', description: 'Convertible notes and preferred structures.', image: 'https://images.unsplash.com/photo-1551288049-bbbda5366991?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/private-funds': { title: 'Private Funds', description: 'Investment vehicles for accredited investors.', image: 'https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/new-world-of-finance': { title: 'New World Finance', description: 'DeFi and blockchain-based asset management.', image: 'https://images.unsplash.com/photo-1621504450168-38f647319c43?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/asset-based-lending': { title: 'Asset Based Lending', description: 'Liquidity against hard assets.', image: 'https://images.unsplash.com/photo-1565514020176-dbf22384914e?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/asset-based-lending/btc-usdt-lending': { title: 'Crypto Lending', description: 'Borrowing against digital asset holdings.', image: 'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=2069&auto=format&fit=crop' },
-  '/financing/asset-based-lending/leveraging': { title: 'Leveraging Programs', description: 'Maximizing capital efficiency.', image: 'https://images.unsplash.com/photo-1604594849809-dfedbc827105?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/asset-based-lending/monetization': { title: 'Asset Monetization', description: 'Turning illiquid assets into working capital.', image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=2071&auto=format&fit=crop' },
-  '/financing/asset-based-lending/financial-instruments': { title: 'Financial Instruments', description: 'BG, SBLC, and MTN trading.', image: 'https://images.unsplash.com/photo-1616077168712-fc6c788cd4ee?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/asset-based-lending/financial-instruments/commodities': { title: 'Commodities Trading', description: 'Oil, Gas, and Precious Metals.', image: 'https://images.unsplash.com/photo-1605722243979-fe0be81929d9?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/asset-based-lending/financial-instruments/trade-programs': { title: 'Trade Programs', description: 'High-yield private placement programs.', image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2070&auto=format&fit=crop' },
-  '/financing/asset-based-lending/financial-instruments/btc-usdt-trade': { title: 'BTC/USDT Trading', description: 'Algorithmic crypto arbitrage.', image: 'https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=2069&auto=format&fit=crop' },
-
-  // --- DATA TOOLS & CATEGORIES ---
-  '/data-tools': {
-    title: 'Capital Investments Suite',
-    description: 'The most comprehensive analytical suite for institutional and private capital.',
-    image: 'https://images.unsplash.com/photo-1551288049-bbbda5366991?q=80&w=2070&auto=format&fit=crop'
+  '/sectors/sports': {
+    title: 'Elite Sports & Entertainment',
+    subtitle: 'Institutional Asset Acquisition',
+    description: 'Federgreen Capital provides capital for professional sports franchises, world-class stadium infrastructure, and global sports technology platforms.',
+    image: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Sports Investments',
+        content: 'Merging passion with institutional-grade returns.',
+        type: 'cards',
+        items: [
+          { title: 'Club Acquisitions', desc: 'Strategic equity in professional global sports franchises.', link: '/services/capital-advisory' },
+          { title: 'Stadium Tech', desc: 'Developing next-gen fan engagement and venue infrastructure.', link: '/sectors/technology' },
+          { title: 'Sports Media', desc: 'Financing digital rights and global distribution networks.', link: '/financing/equity' }
+        ]
+      }
+    ]
   },
-  '/data-tools/financial-analysis': { title: 'Financial Analysis', description: 'Core metrics for asset performance.', image: 'https://images.unsplash.com/photo-1543286386-2f6595e96e6d?q=80&w=2070&auto=format&fit=crop' },
-  '/data-tools/tax-reserves': { title: 'Tax & Reserves', description: 'Optimization of liabilities and capex.', image: 'https://images.unsplash.com/photo-1554224154-260327c00c41?q=80&w=2070&auto=format&fit=crop' },
-  '/data-tools/investment-analysis': { title: 'Investment Analysis', description: 'Deal structuring and exit modeling.', image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=2070&auto=format&fit=crop' },
-  '/data-tools/property-metrics': { title: 'Property Metrics', description: 'Physical asset KPIs.', image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=2073&auto=format&fit=crop' },
-  '/data-tools/advanced-metrics': { title: 'Advanced Metrics', description: 'Complex financial engineering.', image: 'https://images.unsplash.com/photo-1611974765270-ca12586343bb?q=80&w=2070&auto=format&fit=crop' },
-  '/data-tools/cost-expenses': { title: 'Cost & Expenses', description: 'Detailed operating audits.', image: 'https://images.unsplash.com/photo-1634733988685-a91a649ee89d?q=80&w=2071&auto=format&fit=crop' },
-  '/data-tools/tax-gains': { title: 'Tax & Gains', description: 'Capital gains and deferral strategies.', image: 'https://images.unsplash.com/photo-1621504450168-38f647319c43?q=80&w=2070&auto=format&fit=crop' },
-  '/data-tools/portfolio': { title: 'Portfolio Management', description: 'Aggregate holdings analysis.', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop' },
-  '/data-tools/market': { title: 'Market Intelligence', description: 'Global data feeds and geospacial analysis.', image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop' },
-  '/data-tools/business': { title: 'Business Analysis', description: 'Venture validation and planning.', image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop' },
-  '/data-tools/compliance': { title: 'Compliance Hub', description: 'Regulatory and risk management.', image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=2070&auto=format&fit=crop' },
-
-  // --- CONTACT ---
-  '/contact': {
-      title: 'Contact Concierge',
-      description: 'Begin your journey with Federgreen Capital.',
-      image: 'https://images.unsplash.com/photo-1423666639041-f14005171849?q=80&w=2074&auto=format&fit=crop',
-      sections: [{ title: 'Get in Touch', content: 'Our team is available 24/7.', type: 'form-contact' }]
+  '/sectors/aerospace': {
+    title: 'Aerospace & Orbital Intelligence',
+    subtitle: 'Strategic Space Infrastructure',
+    description: 'Supporting the next frontier of human expansion through orbital logistics, satellite constellations, and frontier aerospace manufacturing.',
+    image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Aerospace Nodes',
+        content: 'Capital for the orbital economy.',
+        type: 'cards',
+        items: [
+          { title: 'Orbital Logistics', desc: 'Space-bound cargo and manufacturing infrastructure.', link: '/services/analysis' },
+          { title: 'Satellite Nets', desc: 'Global communication and observation constellations.', link: '/sectors/technology' },
+          { title: 'Defense Tech', desc: 'Sovereign aerospace defense and surveillance systems.', link: '/services/risk-mitigation' }
+        ]
+      }
+    ]
+  },
+  '/sectors/renewable-energy': {
+    title: 'Sustainable Energy Sovereignty',
+    subtitle: 'Infrastructure for a Green Future',
+    description: 'Deploying institutional capital into high-yield renewable projects, including solar farms, wind infrastructure, and green hydrogen hubs.',
+    image: 'https://images.unsplash.com/photo-1466611653911-95282fc3656b?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Energy Verticals',
+        content: 'Financing the transition to zero-carbon energy.',
+        type: 'cards',
+        items: [
+          { title: 'Solar Infrastructure', desc: 'Large-scale photovoltaic arrays in high-irradiation zones.', link: '/services/analysis' },
+          { title: 'Hydrogen Hubs', desc: 'Green hydrogen production and storage facilities.', link: '/financing/debt' },
+          { title: 'Wind Farms', desc: 'Onshore and offshore wind energy generation nodes.', link: '/sectors/sustainability' }
+        ]
+      }
+    ]
+  },
+  '/sectors/film-entertainment': {
+    title: 'Media & Global Entertainment',
+    subtitle: 'Strategic Production Capital',
+    description: 'Financing the future of storytelling through film production, digital distribution platforms, and immersive media technology.',
+    image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Entertainment Nodes',
+        content: 'Investing in high-impact cultural assets.',
+        type: 'cards',
+        items: [
+          { title: 'Film Finance', desc: 'Strategic debt and equity for blockbuster productions.', link: '/financing/private-funds' },
+          { title: 'Immersive Tech', desc: 'Investing in VR/AR and metaverse content engines.', link: '/sectors/technology' },
+          { title: 'Distribution', desc: 'Scaling digital platforms and global content libraries.', link: '/services/strategy' }
+        ]
+      }
+    ]
+  },
+  '/sectors/sustainability': {
+    title: 'Circular Economy & Impact',
+    subtitle: 'Sovereign-Grade ESG Investment',
+    description: 'Focusing on systemic sustainability through waste-to-energy, water purification tech, and ESG-compliant industrial models.',
+    image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Impact Verticals',
+        content: 'Capital that preserves our global future.',
+        type: 'cards',
+        items: [
+          { title: 'Waste to Energy', desc: 'Advanced pyrolysis and biochemical waste conversion nodes.', link: '/services/analysis' },
+          { title: 'Water Tech', desc: 'Sovereign-grade desalination and purification infrastructure.', link: '/sectors/technology' },
+          { title: 'ESG Industry', desc: 'Decarbonizing global manufacturing and supply chains.', link: '/sectors/manufacturing' }
+        ]
+      }
+    ]
+  },
+  '/sectors/mining': {
+    title: 'Critical Resource Extraction',
+    subtitle: 'Mining for the Green Transition',
+    description: 'Strategic investment in critical mineral extraction, focusing on lithium, copper, and rare-earth elements vital for the technology sector.',
+    image: 'https://images.unsplash.com/photo-1516205651411-aef33a44f7c2?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Resource Verticals',
+        content: 'Securing the supply chain for global electrification.',
+        type: 'cards',
+        items: [
+          { title: 'Battery Minerals', desc: 'Lithium, cobalt, and nickel extraction projects.', link: '/services/analysis' },
+          { title: 'Noble Metals', desc: 'Gold, silver, and platinum group metals for industrial use.', link: '/financing/hybrid' },
+          { title: 'Tech Minerals', desc: 'Copper and rare-earth elements for aerospace and energy.', link: '/sectors/aerospace' }
+        ]
+      }
+    ]
+  },
+  '/sectors/food-beverage': {
+    title: 'Global Food Security & AgTech',
+    subtitle: 'Innovation in Nutrition Logistics',
+    description: 'Ensuring global supply chain resilience through investments in vertical farming, precision agriculture, and high-end beverage heritage brands.',
+    image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Agricultural Nodes',
+        content: 'Securing global nutrition with frontier tech.',
+        type: 'cards',
+        items: [
+          { title: 'Vertical Farming', desc: 'Climate-resilient urban agriculture infrastructure.', link: '/services/analysis' },
+          { title: 'Agri-Robotics', desc: 'Autonomous planting and precision irrigation systems.', link: '/sectors/technology' },
+          { title: 'Heritage Brands', desc: 'Acquiring and scaling ultra-premium beverage labels.', link: '/services/scaling-businesses' }
+        ]
+      }
+    ]
+  },
+  '/sectors/manufacturing': {
+    title: 'Advanced Industrial Automation',
+    subtitle: 'Precision Manufacturing Hubs',
+    description: 'Financing the future of global production through robotics, 3D printing at scale, and smart-factory industrial real estate.',
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Manufacturing Nodes',
+        content: 'Scaling the next industrial revolution.',
+        type: 'cards',
+        items: [
+          { title: 'Industrial Robotics', desc: 'AI-driven automation for global supply chains.', link: '/sectors/technology' },
+          { title: 'Additive Mfg', desc: 'Enterprise-scale 3D printing for aerospace and medical.', link: '/sectors/aerospace' },
+          { title: 'Smart Factories', desc: 'Developing high-efficiency, zero-waste production hubs.', link: '/sectors/sustainability' }
+        ]
+      }
+    ]
+  },
+  '/sectors/fashion-beauty': {
+    title: 'Luxury Retail & Heritage Fashion',
+    subtitle: 'Global Brand Architecture',
+    description: 'Acquiring, scaling, and optimizing the world’s most prestigious fashion and beauty brands through strategic capital and digital transformation.',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Fashion Verticals',
+        content: 'Investing in global prestige and heritage.',
+        type: 'cards',
+        items: [
+          { title: 'Heritage Labels', desc: 'Revitalizing and scaling legacy luxury fashion houses.', link: '/services/scaling-businesses' },
+          { title: 'Beauty Tech', desc: 'Next-gen diagnostics and personalized skincare tech.', link: '/sectors/technology' },
+          { title: 'Retail Nodes', desc: 'Developing immersive flagship real estate in global hubs.', link: '/sectors/real-estate' }
+        ]
+      }
+    ]
   }
 };
 
@@ -448,4 +491,16 @@ export const ENTERPRISE_SECTIONS = [
   { id: 'market', label: 'Market Analysis & Data', icon: Globe },
   { id: 'business', label: 'Business Analysis', icon: Briefcase },
   { id: 'compliance', label: 'Compliance (KYC/AML)', icon: Shield },
+];
+
+export const TESTIMONIALS = [
+  { id: '1', name: 'Sarah Chen', role: 'Managing Director, Tech Ventures', rating: 5, text: 'The strategic foresight provided by Federgreen Capital has been instrumental in our European expansion.', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop' },
+  { id: '2', name: 'James Wilson', role: 'CEO, Global Logistics', rating: 5, text: 'Their understanding of complex debt structures is unmatched in the current market.', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150&auto=format&fit=crop' },
+  { id: '3', name: 'Elena Rodriguez', role: 'Founder, Eco-Renewables', rating: 5, text: "Federgreen doesn't just provide capital; they provide a roadmap for sustainable growth.", image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=150&auto=format&fit=crop' }
+];
+
+export const MEMBERSHIP_TIERS = [
+  { name: 'Global Private Access', price: '$25,000', period: 'Annual', initiation: '$5,000', features: [ 'Access to Tier 1 Deal Flow', 'Concierge Strategic Advisory', 'Institutional Data Suite Access', 'Bi-Annual Strategy Reviews' ], highlight: false },
+  { name: 'Global Capital Access', price: '$75,000', period: 'Annual', initiation: '$15,000', features: [ 'Direct GP/LP Networking', 'Priority Capital Allocation', 'On-Demand Risk Modeling', 'Quarterly Insight Summits' ], highlight: true },
+  { name: 'Founders Circle', price: '$250,000', period: 'Annual', initiation: '$50,000', features: [ 'Equity Participation Rights', 'Direct Board Representation', 'Bespoke Portfolio Engineering', 'Private Family Office Services' ], highlight: false }
 ];

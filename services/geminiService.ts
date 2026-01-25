@@ -1,73 +1,120 @@
+
 import { GoogleGenAI, Modality } from "@google/genai";
 
-// Use the recommended model names and initialization patterns from the @google/genai guidelines.
-const getAI = () => {
+// Create a single, memoized instance of the AI client.
+const ai = (() => {
     if (!process.env.API_KEY) {
-        console.error("API_KEY is missing");
-        throw new Error("API Key missing");
+        console.error("CRITICAL: FEDERGREEN_AI_CORE :: API Key not found. Terminal services will be degraded.");
+        return null;
     }
-    return new GoogleGenAI({ apiKey: process.env.API_KEY });
-};
+    try {
+        return new GoogleGenAI({ apiKey: process.env.API_KEY });
+    } catch (error) {
+        console.error("CRITICAL: FEDERGREEN_AI_CORE :: Failed to initialize AI SDK.", error);
+        return null;
+    }
+})();
 
-// 1. General Chat with Search Grounding
+// Standardized error responses
+const API_UNAVAILABLE_CHAT_RESPONSE = {
+    text: "TERMINAL_ERROR: AI_CORE_OFFLINE. CHECK_API_CONFIGURATION.",
+    groundingChunks: []
+};
+const API_UNAVAILABLE_ANALYSIS_RESPONSE = "CRITICAL: REASONING_ENGINE_UNAVAILABLE. CHECK_API_CONFIGURATION.";
+
 export const chatWithGemini = async (message: string, history: { role: string; text: string }[]) => {
-  const ai = getAI();
+  if (!ai) return API_UNAVAILABLE_CHAT_RESPONSE;
+
   const contents = history.map(h => ({
-      role: h.role,
+      role: h.role === 'model' ? 'model' : 'user',
       parts: [{ text: h.text }]
   }));
   contents.push({ role: 'user', parts: [{ text: message }] });
 
   try {
       const response = await ai.models.generateContent({
-          // Use 'gemini-3-flash-preview' for basic text tasks
-          model: 'gemini-3-flash-preview',
-          contents: contents.map(c => ({ role: c.role, parts: c.parts })),
+          model: 'gemini-3-pro-preview',
+          contents: contents,
           config: {
               tools: [{ googleSearch: {} }],
-              systemInstruction: "You are the AI assistant for Federgreen Capital. You are professional, concise, and knowledgeable about finance, investment, and the company's services. Always maintain a polite and executive tone.",
+              systemInstruction: `You are the Federgreen Capital Digital Command Hub (Concierge). 
+              Your interface is a high-fidelity, sovereign-level strategic terminal. 
+              You are professional, precise, and use institutional-grade terminology. 
+              Refer to yourself as the Federgreen Capital Terminal.
+              Focus on absolute strategic integrity, global capital flows, and risk-adjusted metrics.`,
           }
       });
-      
-      // Access .text property directly (do not call as method)
       return {
-          text: response.text,
+          text: response.text || "NO_RESPONSE_CAPTURED",
           groundingChunks: response.candidates?.[0]?.groundingMetadata?.groundingChunks
       };
   } catch (error) {
-      console.error("Chat Error", error);
-      return { text: "I apologize, but I am unable to connect to the server at the moment.", groundingChunks: [] };
+      console.error("Chat Error:", error);
+      return { text: "TERMINAL ERROR: CONNECTION TO SECURE KERNEL INTERRUPTED. RETRY_HANDSHAKE.", groundingChunks: [] };
   }
 };
 
-// 2. Thinking Mode for Investment Analysis
 export const analyzeInvestmentStrategy = async (strategyDescription: string) => {
-    const ai = getAI();
+    if (!ai) return API_UNAVAILABLE_ANALYSIS_RESPONSE;
+    
     try {
         const response = await ai.models.generateContent({
-            // Use 'gemini-3-pro-preview' for complex reasoning tasks
             model: 'gemini-3-pro-preview',
-            contents: `Analyze the following investment strategy and provide a risk assessment and potential ROI projection: ${strategyDescription}`,
+            contents: `Execute institutional-grade diagnostic audit for the following strategic thesis: ${strategyDescription}. 
+            Provide deep-reasoning on risk-mitigation, sovereign alignment, and IRR velocity.`,
             config: {
-                // Ensure thinkingBudget is smaller than maxOutputTokens
-                thinkingConfig: { thinkingBudget: 1024 },
-                maxOutputTokens: 4096,
+                thinkingConfig: { thinkingBudget: 4000 },
             }
         });
-        // Access .text property directly
-        return response.text;
+        return response.text || "DIAGNOSTIC_FAILURE";
     } catch (error) {
-        console.error("Analysis Error", error);
-        return "Unable to perform deep analysis at this time.";
+        console.error("Analysis Error:", error);
+        return "CRITICAL: REASONING ENGINE OVERLOADED. SECURE AUDIT ABORTED.";
     }
 };
 
-// 3. TTS for Articles
-export const generateSpeech = async (text: string): Promise<string | null> => {
-    const ai = getAI();
+export const analyzePortfolioRisk = async (scenarioData: any) => {
+    if (!ai) return null;
+
+    const prompt = `Perform a high-fidelity institutional risk assessment and market vulnerability audit for the following portfolio scenario:
+    ${JSON.stringify(scenarioData)}
+    
+    You must provide:
+    1. Overall Risk Score (0-100)
+    2. Sentiment Analysis (Bullish/Bearish/Neutral with logic)
+    3. Vulnerability Nodes (Top 3-4 specific threats)
+    4. Strategic Moat Rating (0-10)
+    5. Detailed analytical commentary.
+
+    Return the result strictly as a structured JSON object matching this schema:
+    {
+      "riskScore": number,
+      "sentiment": { "rating": string, "logic": string },
+      "vulnerabilities": [{ "node": string, "impact": "High" | "Medium" | "Low", "description": string }],
+      "moatRating": number,
+      "commentary": string
+    }`;
+
     try {
         const response = await ai.models.generateContent({
-            // Use the recommended TTS model
+            model: 'gemini-3-pro-preview',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                thinkingConfig: { thinkingBudget: 2000 }
+            }
+        });
+        return JSON.parse(response.text || "{}");
+    } catch (error) {
+        console.error("Portfolio Risk Audit Error:", error);
+        return null;
+    }
+};
+
+export const generateSpeech = async (text: string): Promise<string | null> => {
+    if (!ai) return null;
+    try {
+        const response = await ai.models.generateContent({
             model: "gemini-2.5-flash-preview-tts",
             contents: [{ parts: [{ text }] }],
             config: {
@@ -79,139 +126,58 @@ export const generateSpeech = async (text: string): Promise<string | null> => {
                 },
             },
         });
-        const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-        return base64Audio || null;
+        return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || null;
     } catch (error) {
-        console.error("TTS Error", error);
+        console.error("Speech Generation Error:", error);
         return null;
     }
 };
 
-// 4. Fast AI for quick summaries
-export const quickSummarize = async (text: string) => {
-    const ai = getAI();
-    try {
-        const response = await ai.models.generateContent({
-            // Use 'gemini-3-flash-preview' as the default for summarization
-            model: 'gemini-3-flash-preview',
-            contents: `Summarize this in one sentence: ${text}`,
-        });
-        // Access .text property directly
-        return response.text;
-    } catch (error) {
-        return "";
-    }
-};
-
-// 5. Business Intelligence Analysis (TAM/SAM/SOM, Moat, etc.)
-export const analyzeBusinessModel = async (businessType: string, location: string, analysisType: 'market_size' | 'moat' | 'competitors') => {
-    const ai = getAI();
-    let prompt = "";
-    
-    if (analysisType === 'market_size') {
-        prompt = `For a ${businessType} in ${location}, estimate the TAM (Total Addressable Market), SAM (Serviceable Available Market), and SOM (Serviceable Obtainable Market). Provide numbers in USD and a brief logic for each. Return as JSON: { "tam": "val", "tam_logic": "...", "sam": "val", "sam_logic": "...", "som": "val", "som_logic": "..." }`;
-    } else if (analysisType === 'moat') {
-        prompt = `Analyze the potential economic moats for a ${businessType} in ${location}. Focus on Network Effects, Switching Costs, Intangible Assets, and Cost Advantage. Return as JSON with a score (1-10) and description for each.`;
-    } else {
-        prompt = `Identify 5 potential competitors for a ${businessType} in ${location}. Return as JSON list.`;
-    }
+export const generatePlanDraft = async (stepTitle: string, inputs: any) => {
+    if (!ai) return "ERROR: DRAFTING_ENGINE_UNAVAILABLE.";
+    const prompt = `Act as a senior strategy consultant at Federgreen Capital. Architect the "${stepTitle}" of a business ecosystem.
+    Context: ${JSON.stringify(inputs)}
+    Style: Professional Markdown.`;
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3-pro-preview',
             contents: prompt,
-            config: { responseMimeType: "application/json" }
+            config: { thinkingConfig: { thinkingBudget: 2000 } }
         });
-        // Access .text property directly
-        return response.text; // Expecting JSON string
+        return response.text || "DRAFTING_TIMEOUT";
     } catch (error) {
-        console.error("Business Analysis Error", error);
-        return null;
+        console.error("Drafting Error:", error);
+        return "ERROR: DOCUMENT GENERATION ENGINE OFFLINE.";
     }
 };
 
-// 6. Location Intelligence (Simulating Market Data APIs via AI)
-export const getLocationIntelligence = async (location: string) => {
-    const ai = getAI();
-    const prompt = `Generate a comprehensive location report for ${location}. 
-    Include estimated data for:
-    1. Climate (Avg Temp, Rainfall)
-    2. Demographics (Population, Median Income)
-    3. Risk Factors (Flood, Fire, Earthquake - Low/Med/High)
-    4. Economic Trends (Growth Rate, Key Industries)
-    Return valid JSON: 
-    {
-      "climate": { "temp": "X°F", "rain": "X in", "desc": "..." },
-      "demographics": { "pop": "X", "income": "$X", "trend": "..." },
-      "risks": { "flood": "Low", "fire": "Med", "quake": "Low", "desc": "..." },
-      "economy": { "growth": "X%", "industries": ["A", "B"], "desc": "..." }
-    }`;
-
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
-            contents: prompt,
-            config: { responseMimeType: "application/json" }
-        });
-        // Access .text property directly
-        return response.text;
-    } catch (error) {
-        console.error("Location Intelligence Error", error);
-        return null;
-    }
-};
-
-// 7. Business Plan Drafter
-export const generatePlanDraft = async (section: string, inputs: Record<string, string>) => {
-    const ai = getAI();
-    const prompt = `Act as a senior strategy consultant at a top-tier firm. 
-    Draft the "${section}" section of a business plan based on the following raw inputs provided by the user: 
-    ${JSON.stringify(inputs, null, 2)}
-    
-    Requirements:
-    - Tone: Professional, persuasive, investment-ready, and confident.
-    - Format: Markdown (use headings, bullet points where appropriate).
-    - Length: Approximately 200-300 words.
-    - Focus: Clarity, strategic value, and financial viability.
-    `;
-
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
-            contents: prompt,
-        });
-        // Access .text property directly
-        return response.text;
-    } catch (error) {
-        console.error("Plan Gen Error", error);
-        return "Unable to generate draft at this time. Please try again.";
-    }
-};
-
-// 8. Suggest Risks
 export const suggestBusinessRisks = async (companyDescription: string) => {
-    const ai = getAI();
-    const prompt = `Based on the following company description, identify 5 key business risks (internal or external).
-    Company Description: ${companyDescription}
-    
-    Return a JSON array of objects:
-    [
-      { "name": "Risk Name", "prob": 50, "impact": 50 },
-      ...
-    ]
-    prob and impact should be integers 0-100.
-    `;
-
+    if (!ai) return "[]";
+    const prompt = `Perform risk audit for: ${companyDescription}. Return JSON: [{ "name": "...", "prob": 0-100, "impact": 0-100, "mitigation": "..." }]`;
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-3-pro-preview',
             contents: prompt,
             config: { responseMimeType: "application/json" }
         });
-        // Access .text property directly
-        return response.text;
+        return response.text || "[]";
     } catch (error) {
-        console.error("Risk Suggestion Error", error);
         return "[]";
+    }
+};
+
+export const analyzeBusinessModel = async (biz: string, loc: string, type: string) => {
+    if (!ai) return null;
+    const prompt = `Execute sovereign-level Market Intelligence scan for a ${biz} in ${loc}. Perform ${type} analysis. Return structured JSON matching the requested module schema.`;
+    try {
+        const response = await ai.models.generateContent({
+            model: 'gemini-3-pro-preview',
+            contents: prompt,
+            config: { responseMimeType: "application/json" }
+        });
+        return response.text || null;
+    } catch (error) {
+        return null;
     }
 };

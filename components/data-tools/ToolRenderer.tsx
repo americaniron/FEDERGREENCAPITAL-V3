@@ -1,21 +1,20 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { FinancialScenario } from '../../types';
-import { Finance } from '../../lib/finance-engine';
-import { TOOL_REGISTRY, ToolDef } from '../../lib/tool-registry';
+import { TOOL_REGISTRY } from '../../lib/tool-registry';
+import { CALCULATORS } from '../../constants/toolDefinitions';
+import { 
+    TrendingUp, Activity, BarChart3, 
+    ArrowRight, Zap, Target, Terminal as TerminalIcon
+} from 'lucide-react';
 import MarketIntelligence from '../tools/MarketIntelligence';
 import BusinessPlanBuilder from '../tools/BusinessPlanBuilder';
 import BusinessIntelligence from '../tools/BusinessIntelligence';
 import ApiSettings from '../tools/ApiSettings';
 import ComplianceHub from '../tools/ComplianceHub';
-import { ScenarioManager } from '../../lib/scenario-manager';
-import { 
-    Calculator, TrendingUp, Info, Download, Copy, FileSpreadsheet, 
-    ArrowUpRight, DollarSign, Activity, Percent, Clock, 
-    UserCheck, Table, History, Scale, Coins, Settings, Sparkles, Plus, Trash2,
-    Layers, Briefcase, Globe, Shield, Users, PieChart, FileCheck, ShieldCheck,
-    BarChart3, Zap, ToggleLeft, ToggleRight, ChevronDown, X
-} from 'lucide-react';
+import CalculatorEngine from '../tools/CalculatorEngine';
+import InvestmentAnalyzer from '../InvestmentAnalyzer';
+import PortfolioPerformance from '../tools/PortfolioPerformance';
 
 interface ToolRendererProps {
     toolId: string | null;
@@ -23,121 +22,61 @@ interface ToolRendererProps {
     scenario: FinancialScenario;
     allScenarios: FinancialScenario[];
     onUpdateScenario: (updates: Partial<FinancialScenario>) => void;
+    onNavigate: (path: string) => void;
 }
 
-const ToolRenderer: React.FC<ToolRendererProps> = ({ toolId, categoryId, scenario, allScenarios, onUpdateScenario }) => {
-    const [useNcfForDscr, setUseNcfForDscr] = useState(false);
-    const [isScenarioManagerOpen, setIsScenarioManagerOpen] = useState(false);
-
+const ToolRenderer: React.FC<ToolRendererProps> = ({ toolId, categoryId, scenario, allScenarios, onUpdateScenario, onNavigate }) => {
     const tool = useMemo(() => TOOL_REGISTRY.find(t => t.id === toolId), [toolId]);
     
-    const handleScenarioSelect = (id: string) => {
-        ScenarioManager.setActiveScenarioId(id);
-        const newActive = ScenarioManager.getActiveScenario();
-        onUpdateScenario(newActive); // This triggers a state update in the parent
-        setIsScenarioManagerOpen(false);
-    };
+    // Core Logic: Map tool IDs to specific modules or generic engines
+    const renderContent = () => {
+        // 1. Specialty Modules
+        if (toolId === 'market' || toolId === 'data-hub') return <MarketIntelligence />;
+        if (toolId === 'business' || toolId === 'business-planner') return <BusinessPlanBuilder scenario={scenario} />;
+        if (toolId === 'business-valuation-tool') return <BusinessIntelligence />;
+        if (toolId === 'compliance' || toolId === 'kyc-aml' || toolId === 'risk-checklist') return <ComplianceHub />;
+        if (toolId === 'api-settings') return <ApiSettings />;
+        if (toolId === 'portfolio-performance') return <PortfolioPerformance allScenarios={allScenarios} onNavigate={onNavigate} />;
 
-    const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+        // 2. Calculation Engines
+        const calculatorDef = CALCULATORS.find(c => c.id === toolId);
+        if (calculatorDef) {
+            return <CalculatorEngine calculator={calculatorDef} />;
+        }
 
-    const sharedData = useMemo(() => {
-        if (!scenario) return null;
-        const monthlyRent = scenario.grossPotentialRent + scenario.otherIncome;
-        const vacancyLoss = (monthlyRent * (scenario.vacancyRate / 100));
-        const effectiveGrossIncome = (monthlyRent - vacancyLoss) * 12;
-        const mgmtFee = effectiveGrossIncome * (scenario.managementFee / 100);
-        const annualOpEx = scenario.propertyTax + scenario.insurance + scenario.maintenance + 
-                           scenario.utilities + scenario.otherExpenses + scenario.hoa + mgmtFee;
-        
-        const noi = Finance.noi(effectiveGrossIncome, annualOpEx);
-        const capRate = Finance.capRate(noi, scenario.purchasePrice);
-        const monthlyDebt = Finance.mortgagePayment(scenario.loanAmount, scenario.interestRate, scenario.termYears, scenario.loanType);
-        const annualDebt = monthlyDebt * 12;
-        const cashFlow = noi - annualDebt;
-        const totalInvestment = (scenario.purchasePrice - scenario.loanAmount) + scenario.rehabBudget + scenario.closingCosts;
-        const coc = Finance.cashOnCash(cashFlow, totalInvestment);
-        const dscr = Finance.dscr(useNcfForDscr ? cashFlow : noi, annualDebt);
-
-        return { noi, capRate, coc, dscr, cashFlow, totalInvestment, annualDebt };
-    }, [scenario, useNcfForDscr]);
-    
-    if (!tool || !scenario || !sharedData) {
+        // 3. Fallback AI Strategic Audit (For all non-specific Analysis tools)
         return (
-            <div className="text-center py-20">
-                <h2 className="text-2xl text-white">Loading Tool...</h2>
-                <p className="text-slate-400">If this persists, the tool ID may be invalid.</p>
-            </div>
-        );
-    }
-    
-    const renderModule = () => {
-        // Here you would have specific layouts per tool
-        // For brevity, we'll use a generic one
-        return (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-4">
-                    <div className="bg-brand-900 border border-brand-800 p-8 rounded-2xl">
-                        <h3 className="font-bold text-white mb-6">Inputs</h3>
-                        {/* Generic Inputs based on some logic */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {/* Left: Inputs / Parameters */}
+                <div className="lg:col-span-4 space-y-8">
+                    <div className="bg-brand-950 border border-brand-gold/10 p-10 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                        <div className="scanline-overlay opacity-5"></div>
+                        <h4 className="text-xs font-bold text-brand-gold uppercase tracking-[0.4em] mb-10 border-b border-white/5 pb-4">Logic Parameters</h4>
+                        <div className="space-y-6">
+                            <div className="p-6 bg-brand-gold/5 rounded-2xl border border-brand-gold/10">
+                                <p className="text-[10px] font-mono font-bold text-brand-gold/40 uppercase tracking-widest mb-3">Asset Target</p>
+                                <p className="text-white font-bold text-sm truncate">{scenario.propertyAddress}</p>
+                            </div>
+                            <div className="p-6 bg-brand-gold/5 rounded-2xl border border-brand-gold/10">
+                                <p className="text-[10px] font-mono font-bold text-brand-gold/40 uppercase tracking-widest mb-3">Valuation Basis</p>
+                                <p className="text-white font-bold text-sm">${scenario.purchasePrice.toLocaleString()}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                {/* Right: Results / Analysis */}
                 <div className="lg:col-span-8">
-                    <div className="bg-brand-900 border border-brand-800 p-8 rounded-2xl">
-                         <h3 className="font-bold text-white mb-2">{tool.name} Result</h3>
-                         <p className="text-4xl font-bold text-brand-gold">
-                            {/* Generic result */}
-                         </p>
-                    </div>
+                    <InvestmentAnalyzer />
                 </div>
             </div>
         );
     };
 
     return (
-        <div className="animate-fade-in">
-            {/* Hero Section */}
-            <section className="relative bg-brand-900 py-24 px-4 border-b border-brand-800">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex justify-between items-end">
-                        <div>
-                            <p className="text-sm font-bold text-brand-gold uppercase tracking-widest">Data Tools / {tool.category.replace(/-/g, ' ')}</p>
-                            <h1 className="text-5xl font-heading font-bold text-white mt-4">{tool.name}</h1>
-                            <p className="text-slate-400 mt-4 max-w-2xl">{tool.description}</p>
-                        </div>
-                        <div className="relative">
-                            <button onClick={() => setIsScenarioManagerOpen(true)} className="flex items-center gap-3 bg-brand-950 border border-brand-700 rounded-lg px-5 py-3 hover:border-brand-gold transition-all">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Scenario:</span>
-                                <span className="text-sm font-bold truncate text-white">{scenario.name}</span>
-                                <ChevronDown size={16} className="text-slate-500" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 py-16">
-                {renderModule()}
-            </div>
-            
-            {isScenarioManagerOpen && (
-                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-950/90 backdrop-blur-sm">
-                    <div className="relative bg-brand-900 border border-brand-700 w-full max-w-xl rounded-3xl p-10 shadow-2xl animate-fade-in">
-                        <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-2xl font-heading font-bold text-white">Select Scenario</h3>
-                            <button onClick={() => setIsScenarioManagerOpen(false)} className="text-slate-500 hover:text-white"><X size={24} /></button>
-                        </div>
-                        <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-                            {allScenarios.map(s => (
-                                <div key={s.id} onClick={() => handleScenarioSelect(s.id)} className={`p-4 rounded-xl border cursor-pointer ${s.id === scenario.id ? 'bg-brand-gold/10 border-brand-gold' : 'bg-brand-950 border-brand-800 hover:border-brand-700'}`}>
-                                    <p className="font-bold text-white">{s.name}</p>
-                                    <p className="text-xs text-slate-500">{s.propertyAddress}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
+        <div className="glass rounded-[4rem] p-12 lg:p-16 border border-brand-gold/10 shadow-2xl relative overflow-hidden">
+            <div className="scanline-overlay opacity-5"></div>
+            {renderContent()}
         </div>
     );
 };

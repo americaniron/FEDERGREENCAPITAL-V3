@@ -95,6 +95,7 @@ export const Finance = {
         f += cashflows[t] / Math.pow(1 + rate, t);
         df -= (t * cashflows[t]) / Math.pow(1 + rate, t + 1);
       }
+      if (df === 0) return NaN;
       const newRate = rate - f / df;
       if (Math.abs(newRate - rate) < precision) return newRate * 100;
       rate = newRate;

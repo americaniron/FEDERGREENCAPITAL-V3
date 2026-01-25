@@ -1,5 +1,6 @@
+
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="light scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         darkMode: 'class',
@@ -16,23 +17,36 @@
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
               heading: ['Montserrat', 'sans-serif'],
+              mono: ['Fira Code', 'monospace'],
             },
             colors: {
               brand: {
-                950: '#0f1129', // Lighter than previous #050510 (Deep Navy)
-                900: '#1a1d42', // Lighter than previous #0f1026 (Royal Navy)
-                800: '#282c63', // Lighter than previous #1a1b3b (Indigo Navy)
-                700: '#3e4491', // Vibrant Indigo
-                600: '#5259c0', // Bright Indigo
-                500: '#6366f1', 
-                gold: '#d4af37', // Refined Metallic Gold
+                50: '#f4eff7',
+                100: '#e8dff0',
+                200: '#d1bfe0',
+                300: '#ba9ed1',
+                400: '#a37ec1',
+                500: '#8b5db2',
+                600: '#744599',
+                700: '#4B2C71', // Core Purple
+                800: '#412562',
+                900: '#362052',
+                950: '#11091b', // Darker Depth
+                gold: '#d4af37', 
                 gold_light: '#f3d267',
+                terminal: '#00ff41',
               }
             },
             animation: {
               'aurora': 'aurora 10s infinite linear',
-              'fade-in': 'fadeIn 0.8s ease-out forwards',
-              'fade-up': 'fadeUp 0.8s ease-out forwards',
+              'fade-in': 'fadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+              'fade-up': 'fadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+              'float': 'float 6s ease-in-out infinite',
+              'glow': 'glow 3s ease-in-out infinite',
+              'shimmer': 'shimmer 2.5s infinite linear',
+              'typing': 'typing 3.5s steps(40, end), blink-caret .75s step-end infinite',
+              'scanline': 'scanline 6s linear infinite',
+              'reveal-text': 'reveal-text 1s cubic-bezier(0.22, 1, 0.36, 1) forwards',
             },
             keyframes: {
               aurora: {
@@ -40,13 +54,37 @@
                 '50%': { backgroundPosition: '100% 50%' },
                 '100%': { backgroundPosition: '0% 50%' },
               },
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
+              fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
               fadeUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
+                '0%': { opacity: '0', transform: 'translateY(40px) scale(0.98)' },
+                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-20px)' }
+              },
+              glow: {
+                '0%, 100%': { opacity: '0.1' },
+                '50%': { opacity: '0.3' }
+              },
+              shimmer: {
+                '0%': { transform: 'translateX(-100%) skewX(-20deg)' },
+                '100%': { transform: 'translateX(200%) skewX(-20deg)' }
+              },
+              typing: {
+                from: { width: 0 }, to: { width: '100%' }
+              },
+              'blink-caret': {
+                'from, to': { borderColor: 'transparent' },
+                '50%': { borderColor: 'rgba(212, 175, 55, 0.75)' }
+              },
+              scanline: {
+                '0%': { transform: 'translateY(-100%)' },
+                '100%': { transform: 'translateY(100%)' }
+              },
+              'reveal-text': {
+                  '0%': { clipPath: 'inset(0 100% 0 0)' },
+                  '100%': { clipPath: 'inset(0 0 0 0)' }
               }
             }
           }
@@ -54,39 +92,78 @@
       }
     </script>
     <style>
-      /* World Class Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
+      :root {
+          --spotlight-x: 50%;
+          --spotlight-y: 50%;
       }
-      ::-webkit-scrollbar-track {
-        background: transparent; 
-      }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #11091b; }
       ::-webkit-scrollbar-thumb {
-        background: #3e4491; 
-        border-radius: 4px;
-        border: 2px solid transparent;
-        background-clip: content-box;
+        background: rgba(116, 69, 153, 0.4); 
+        border-radius: 10px;
       }
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: #d4af37; 
+      ::-webkit-scrollbar-thumb:hover { background-color: #744599; }
+      
+      .glass {
+        background: rgba(54, 32, 82, 0.65);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border: 1px solid rgba(212, 175, 55, 0.15);
       }
       
-      /* Glassmorphism Utilities */
-      .glass {
-        background: rgba(26, 29, 66, 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+      .flash-card {
+          position: relative;
+          background: rgba(35, 21, 53, 0.5);
+          border: 1px solid rgba(212, 175, 55, 0.1);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+          transform-style: preserve-3d;
       }
-      .glass-light {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+      .flash-card:hover {
+          box-shadow: 0 40px 80px -20px rgba(0,0,0,0.5);
+      }
+      .flash-card::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: radial-gradient(400px circle at var(--spotlight-x) var(--spotlight-y), rgba(212, 175, 55, 0.1), transparent 100%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+      }
+      .flash-card:hover::before {
+          opacity: 1;
       }
 
-      /* Text Selection */
-      ::selection {
-        background: #d4af37;
-        color: #0f1129;
+      .terminal-text {
+        font-family: 'Fira Code', monospace;
+        color: #d4af37;
+        text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+      }
+
+      .scanline-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50% );
+        background-size: 100% 4px;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .text-glow {
+        text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+      }
+
+      @media (max-width: 640px) {
+        .glass {
+          background: rgba(54, 32, 82, 0.85);
+          backdrop-filter: blur(20px);
+        }
       }
     </style>
   <script type="importmap">
@@ -101,7 +178,7 @@
 }
 </script>
 </head>
-  <body class="bg-slate-50 text-slate-900 dark:bg-gradient-to-br dark:from-brand-950 dark:to-brand-900 dark:text-slate-100 antialiased font-sans transition-colors duration-500 min-h-screen">
+  <body class="bg-brand-950 text-white antialiased font-sans selection:bg-brand-gold selection:text-brand-950 overflow-x-hidden">
     <div id="root"></div>
   </body>
 </html>

@@ -1,4 +1,4 @@
-// FIX: Added content to this file to make it a valid module and provide necessary definitions.
+
 import { Finance } from '../lib/finance-engine';
 
 export interface CalculatorField {
@@ -41,6 +41,35 @@ export const CALCULATORS: CalculatorDef[] = [
         chartData: [
             { label: 'Principal', value: inputs.principal, color: '#4338ca' },
             { label: 'Interest', value: totalInterest, color: '#c026d3' }
+        ]
+      };
+    }
+  },
+  {
+    id: 'amort-schedule',
+    name: 'Amortization Schedule',
+    description: 'Full principal and interest reduction modeling.',
+    fields: [
+      { id: 'principal', label: 'Loan Principal', type: 'currency', defaultValue: 500000 },
+      { id: 'rate', label: 'Interest Rate', type: 'percent', defaultValue: 7.2 },
+      { id: 'years', label: 'Amortization Years', type: 'number', defaultValue: 30 },
+    ],
+    calculate: (inputs) => {
+      const payment = Finance.mortgagePayment(inputs.principal, inputs.rate, inputs.years);
+      const totalPaid = payment * inputs.years * 12;
+      const totalInterest = totalPaid - inputs.principal;
+      return {
+        resultLabel: 'Monthly P&I',
+        result: payment,
+        format: 'currency',
+        details: [
+            { label: 'Total Principal', value: `$${inputs.principal.toLocaleString()}` },
+            { label: 'Total Interest', value: `$${totalInterest.toLocaleString(undefined, {maximumFractionDigits: 0})}` },
+            { label: 'Total Payback', value: `$${totalPaid.toLocaleString(undefined, {maximumFractionDigits: 0})}` },
+        ],
+        chartData: [
+            { label: 'Principal', value: inputs.principal, color: '#d4af37' },
+            { label: 'Interest', value: totalInterest, color: '#312e81' }
         ]
       };
     }

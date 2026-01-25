@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MEMBERSHIP_TIERS } from '../constants';
 import { Input, Select, TextArea } from './ui/FormElements';
@@ -31,7 +32,7 @@ const MembershipApplication: React.FC = () => {
                                 Most Popular
                             </div>
                         )}
-                        <h3 className="text-xl font-heading font-bold text-white mb-2">{tier.name}</h3>
+                        <h3 className="text-xl font-heading font-bold text-brand-gold mb-2">{tier.name}</h3>
                         <div className="mb-6">
                             <span className="text-3xl font-bold text-brand-gold">{tier.price}</span>
                             <span className="text-slate-500 text-sm"> / {tier.period}</span>
