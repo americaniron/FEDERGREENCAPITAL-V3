@@ -25,8 +25,8 @@ const ToolPageTemplate: React.FC<ToolPageTemplateProps> = ({
 
     return (
         <div className="animate-fade-in space-y-12 pb-32">
-            {/* Breadcrumbs - Flash UI Integrated */}
-            <nav className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-white/20 mb-8 no-print">
+            {/* Breadcrumbs - Left Aligned */}
+            <nav className="flex flex-wrap items-center gap-3 md:gap-4 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.4em] text-white/20 mb-8 no-print">
                 <button onClick={() => onNavigate('/')} className="hover:text-brand-gold flex items-center gap-2 transition-colors">
                     <Home size={12}/> HOME
                 </button>
@@ -39,18 +39,18 @@ const ToolPageTemplate: React.FC<ToolPageTemplateProps> = ({
                 {toolId && (
                     <>
                         <ChevronRight size={10} className="opacity-30" />
-                        <span className="text-white">{toolId.replace(/-/g, ' ')}</span>
+                        <span className="text-white whitespace-nowrap">{toolId.replace(/-/g, ' ')}</span>
                     </>
                 )}
             </nav>
 
-            <div className="flex flex-col lg:flex-row gap-12 items-start">
-                {/* Persistent Navigation Sidebar - Enhanced */}
+            <div className="flex flex-col lg:flex-row gap-8 xl:gap-12 items-start">
+                {/* Sidebar */}
                 <DataToolsSidebar currentPath={currentPath} onNavigate={onNavigate} />
 
                 {/* Main Action Content Area */}
                 <div className="flex-1 w-full space-y-12 min-w-0">
-                    <div className="glass rounded-[4rem] p-10 md:p-16 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-brand-gold/10 relative overflow-hidden">
+                    <div className="glass rounded-[2rem] md:rounded-[4rem] p-6 md:p-12 xl:p-16 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-brand-gold/10 relative overflow-hidden">
                         <div className="scanline-overlay opacity-5"></div>
                         <ToolRenderer 
                             toolId={toolId || categoryId}
@@ -62,8 +62,8 @@ const ToolPageTemplate: React.FC<ToolPageTemplateProps> = ({
                         />
                     </div>
 
-                    {/* Institutional Logic Footer - Upscaled */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-16 border-t border-brand-800/50">
+                    {/* Institutional Logic Footer */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 pt-16 border-t border-brand-800/50">
                         <div className="lg:col-span-4">
                             <div className="flex items-center gap-4 text-brand-gold font-bold uppercase tracking-[0.4em] text-[10px] mb-6">
                                 <Info size={16} /> Strategic Context
@@ -77,7 +77,7 @@ const ToolPageTemplate: React.FC<ToolPageTemplateProps> = ({
                             <div className="flex items-center gap-4 text-brand-gold font-bold uppercase tracking-[0.4em] text-[10px] mb-6">
                                 <Calculator size={16} /> Core Logic
                             </div>
-                            <div className="p-6 bg-brand-950/50 border border-brand-gold/10 rounded-3xl">
+                            <div className="p-6 bg-brand-950/50 border border-brand-gold/10 rounded-2xl md:rounded-3xl">
                                 <details className="group">
                                     <summary className="flex justify-between items-center cursor-pointer list-none text-[9px] font-bold text-white/60 uppercase tracking-[0.3em] group-hover:text-white transition-colors">
                                         Formulas & Weights
@@ -93,15 +93,15 @@ const ToolPageTemplate: React.FC<ToolPageTemplateProps> = ({
                         </div>
 
                         <div className="lg:col-span-4 flex flex-col justify-end gap-3 no-print">
-                            <div className="flex gap-3">
-                                <button className="flex-1 flex items-center justify-center gap-3 py-5 bg-white/5 border border-brand-gold/20 text-brand-gold rounded-2xl hover:bg-brand-gold hover:text-brand-950 transition-all text-[10px] font-extrabold uppercase tracking-widest">
+                            <div className="flex flex-wrap sm:flex-nowrap gap-3">
+                                <button className="flex-1 min-w-[120px] flex items-center justify-center gap-3 py-4 md:py-5 bg-white/5 border border-brand-gold/20 text-brand-gold rounded-2xl hover:bg-brand-gold hover:text-brand-950 transition-all text-[10px] font-extrabold uppercase tracking-widest">
                                     <Printer size={14} /> EXPORT PDF
                                 </button>
-                                <button className="flex-1 flex items-center justify-center gap-3 py-5 bg-white/5 border border-brand-gold/20 text-brand-gold rounded-2xl hover:bg-brand-gold hover:text-brand-950 transition-all text-[10px] font-extrabold uppercase tracking-widest">
+                                <button className="flex-1 min-w-[120px] flex items-center justify-center gap-3 py-4 md:py-5 bg-white/5 border border-brand-gold/20 text-brand-gold rounded-2xl hover:bg-brand-gold hover:text-brand-950 transition-all text-[10px] font-extrabold uppercase tracking-widest">
                                     <Download size={14} /> EXPORT CSV
                                 </button>
                             </div>
-                            <button className="w-full flex items-center justify-center gap-3 py-5 bg-brand-gold/10 border border-brand-gold/40 text-white rounded-2xl hover:bg-brand-gold hover:text-brand-950 transition-all text-[10px] font-extrabold uppercase tracking-widest shadow-lg">
+                            <button className="w-full flex items-center justify-center gap-3 py-4 md:py-5 bg-brand-gold/10 border border-brand-gold/40 text-white rounded-2xl hover:bg-brand-gold hover:text-brand-950 transition-all text-[10px] font-extrabold uppercase tracking-widest shadow-lg">
                                 <Copy size={14} /> COPY ANALYTIC SNAPSHOT
                             </button>
                         </div>

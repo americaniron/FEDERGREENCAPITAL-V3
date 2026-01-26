@@ -123,7 +123,7 @@ const InvestmentAnalyzer: React.FC = () => {
     };
 
     return (
-        <div className="bg-brand-950 p-2 md:p-14 rounded-[4.5rem] shadow-[0_100px_200px_-50px_rgba(0,0,0,0.9)] border border-brand-gold/20 my-16 relative overflow-hidden group">
+        <div className="bg-brand-950/40 backdrop-blur-xl p-2 md:p-14 rounded-[4.5rem] shadow-[0_100px_200px_-50px_rgba(0,0,0,0.7)] border border-brand-gold/20 my-16 relative overflow-hidden group">
             <div className="scanline-overlay opacity-5 pointer-events-none"></div>
             <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-gold/5 rounded-full blur-[160px] pointer-events-none group-hover:bg-brand-gold/10 transition-all duration-1000"></div>
             
@@ -165,7 +165,7 @@ const InvestmentAnalyzer: React.FC = () => {
                 {!analysis && (
                     <div className="space-y-12 animate-fade-in max-w-6xl mx-auto">
                         <div className="relative group/field">
-                            <div className="absolute -top-4 left-10 px-5 bg-brand-950 text-[11px] font-heading font-black text-brand-gold uppercase tracking-[0.5em] z-20 transition-all group-focus-within/field:text-white flex items-center gap-3">
+                            <div className="absolute -top-4 left-10 px-5 bg-brand-950/80 backdrop-blur-md text-[11px] font-heading font-black text-brand-gold uppercase tracking-[0.5em] z-20 transition-all group-focus-within/field:text-white flex items-center gap-3">
                                 <TerminalIcon size={14} /> Primary Investment Thesis
                             </div>
                             <textarea
@@ -181,7 +181,7 @@ const InvestmentAnalyzer: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             <div className="relative group/field">
-                                <label className="absolute -top-3 left-8 px-4 bg-brand-950 text-[10px] font-heading font-extrabold text-slate-500 uppercase tracking-widest z-20">Assumptions Matrix</label>
+                                <label className="absolute -top-3 left-8 px-4 bg-brand-950/80 backdrop-blur-md text-[10px] font-heading font-extrabold text-slate-500 uppercase tracking-widest z-20">Assumptions Matrix</label>
                                 <textarea
                                     className="w-full p-10 rounded-[3rem] bg-white/5 border border-white/10 text-white placeholder-white/10 focus:ring-8 focus:ring-brand-gold/5 focus:border-brand-gold/30 outline-none h-44 transition-all text-sm font-mono leading-relaxed shadow-inner"
                                     placeholder="Input baseline variables (e.g., Target LTV, Exit Cap, IRR benchmark)..."
@@ -190,7 +190,7 @@ const InvestmentAnalyzer: React.FC = () => {
                                 />
                             </div>
                             <div className="relative group/field">
-                                <label className="absolute -top-3 left-8 px-4 bg-brand-950 text-[10px] font-heading font-extrabold text-slate-500 uppercase tracking-widest z-20">Target Benchmarks</label>
+                                <label className="absolute -top-3 left-8 px-4 bg-brand-950/80 backdrop-blur-md text-[10px] font-heading font-extrabold text-slate-500 uppercase tracking-widest z-20">Target Benchmarks</label>
                                 <textarea
                                     className="w-full p-10 rounded-[3rem] bg-white/5 border border-white/10 text-white placeholder-white/10 focus:ring-8 focus:ring-brand-gold/5 focus:border-brand-gold/30 outline-none h-44 transition-all text-sm font-mono leading-relaxed shadow-inner"
                                     placeholder="Define desired alpha (e.g., 22% Net IRR, 2.5x Multiplier)..."
@@ -249,7 +249,7 @@ const InvestmentAnalyzer: React.FC = () => {
                             </div>
                             <button 
                                 onClick={() => { setAnalysis(''); setThesis(''); }} 
-                                className="px-10 py-5 bg-white/5 border border-white/10 text-white font-heading font-black rounded-[2rem] hover:bg-brand-gold hover:text-brand-950 transition-all text-[11px] uppercase tracking-widest flex items-center gap-4 no-print shadow-xl group"
+                                className="px-10 py-5 bg-white/10 backdrop-blur-md border border-white/10 text-white font-heading font-black rounded-[2rem] hover:bg-brand-gold hover:text-brand-950 transition-all text-[11px] uppercase tracking-widest flex items-center gap-4 no-print shadow-xl group"
                             >
                                 <Search size={20} className="group-hover:scale-110 transition-transform" /> New Strategic Scan
                             </button>
