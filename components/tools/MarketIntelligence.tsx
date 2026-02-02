@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
     Search, MapPin, CloudSun, AlertTriangle, 
     Loader2, Globe, Database, Compass, Sunrise, 
     Wifi, Landmark, Sprout, Info, Settings, Sparkles,
     Mountain, Droplets, Activity, Fingerprint, ShieldAlert,
-    Clock, Gauge, Radio, Wind
+    Clock, Gauge, Radio, Wind, Users, Building2
 } from 'lucide-react';
 
 interface MarketData {
@@ -13,17 +13,26 @@ interface MarketData {
     elevation?: number;
     weather?: any;
     sunriseSunset?: any;
-    aqi?: number;
     earthquake?: any;
     country?: any;
     lastFetched: number;
     sourceIds: string[];
 }
 
-const MarketIntelligence: React.FC = () => {
+interface EnrichedMarketData extends MarketData {
+    fccBroadband?: any;
+    censusData?: any;
+    usdaData?: any;
+}
+
+interface MarketIntelligenceProps {
+    onNavigate: (path: string) => void;
+}
+
+const MarketIntelligence: React.FC<MarketIntelligenceProps> = ({ onNavigate }) => {
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<MarketData | null>(null);
+    const [data, setData] = useState<EnrichedMarketData | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [progress, setProgress] = useState(0);
 
@@ -43,6 +52,7 @@ const MarketIntelligence: React.FC = () => {
         setLoading(true);
         setError(null);
         setProgress(10);
+        setData(null);
 
         const normalizedQuery = query.toLowerCase().trim();
         const cached = getCachedData(normalizedQuery);
@@ -58,39 +68,85 @@ const MarketIntelligence: React.FC = () => {
 
         try {
             // 1. Geocoding Uplink (Nominatim)
-            const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`);
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`);
+            if (!geoRes.ok) throw new Error("GEOSPATIAL_ERROR: FAILED_TO_FETCH_GEO_NODE");
             const geoData = await geoRes.json();
             if (!geoData.length) throw new Error("GEOSPATIAL_ERROR: NODE_NOT_FOUND");
             
             const loc = geoData[0];
-            const lat = loc.lat;
-            const lon = loc.lon;
-            setProgress(40);
+            const { lat, lon, address } = loc;
+            const countryCode = address?.country_code;
+            setProgress(30);
+
+            // FIPS codes for US-based queries
+            let countyFips, stateFips;
+            if (countryCode === 'us') {
+                const censusGeoRes = await fetch(`https://geocoding.geo.census.gov/geocoder/geographies/coordinates?x=${lon}&y=${lat}&benchmark=Public_AR_Current&vintage=Current_Current&format=json`);
+                if (censusGeoRes.ok) {
+                    const censusGeoData = await censusGeoRes.json();
+                    const geographies = censusGeoData.result?.geographies;
+                    countyFips = geographies?.['Counties']?.[0]?.COUNTY;
+                    stateFips = geographies?.['Counties']?.[0]?.STATE;
+                }
+            }
+            setProgress(45);
+
+            // API Keys from localStorage
+            const censusKey = localStorage.getItem('api_key_census');
+            const usdaKey = localStorage.getItem('api_key_usda');
 
             // 2. Multi-Node Parallel Synchronous Fetching
-            const [elevRes, weatherRes, sunRes, countryRes, quakeRes] = await Promise.all([
+            const [
+                elevRes, weatherRes, sunRes, countryRes, quakeRes, fccRes, censusRes, usdaRes
+            ] = await Promise.all([
                 fetch(`https://api.open-elevation.com/api/v1/lookup?locations=${lat},${lon}`).catch(() => null),
                 fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m&hourly=pm2_5,pm10`).catch(() => null),
                 fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0`).catch(() => null),
-                fetch(`https://restcountries.com/v3.1/name/${loc.display_name.split(',').pop().trim()}`).catch(() => null),
-                fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=${lat}&longitude=${lon}&maxradiuskm=100&limit=5`).catch(() => null)
+                countryCode ? fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`).catch(() => null) : Promise.resolve(null),
+                fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=${lat}&longitude=${lon}&maxradiuskm=100&limit=5`).catch(() => null),
+                fetch(`https://broadbandmap.fcc.gov/api/public/consumer/coverage?latitude=${lat}&longitude=${lon}&format=json`).catch(() => null),
+                (censusKey && stateFips && countyFips) ? fetch(`https://api.census.gov/data/2022/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=county:${countyFips}&in=state:${stateFips}&key=${censusKey}`).catch(() => null) : Promise.resolve(null),
+                (usdaKey && stateFips && countyFips) ? fetch(`https://quickstats.nass.usda.gov/api/api_GET/?key=${usdaKey}&program=CENSUS&year=2022&sector=ECONOMICS&group=FARMS%20%26%20LAND%20%26%20PERSONS&category=LAND&data_item=LAND,%20IN%20FARMS%20-%20ACRES&agg_level_desc=COUNTY&state_fips_code=${stateFips}&county_code=${countyFips}`).catch(() => null) : Promise.resolve(null)
             ]);
+            setProgress(85);
 
-            setProgress(80);
+            // Process results
+            const fccData = fccRes && fccRes.ok ? (await fccRes.json()).results : null;
+            const censusDataRaw = censusRes && censusRes.ok ? await censusRes.json() : null;
+            const usdaDataRaw = usdaRes && usdaRes.ok ? await usdaRes.json() : null;
+            
+            let censusData = null;
+            if (censusDataRaw && censusDataRaw.length > 1) {
+                const headers = censusDataRaw[0];
+                const values = censusDataRaw[1];
+                censusData = {
+                    population: parseInt(values[headers.indexOf('B01003_001E')]),
+                    medianIncome: parseInt(values[headers.indexOf('B19013_001E')])
+                };
+            }
 
-            const marketResult: MarketData = {
+            let usdaData = null;
+            if (usdaDataRaw && usdaDataRaw.data?.length > 0) {
+                const valueStr = usdaDataRaw.data[0].Value.replace(/,/g, '');
+                usdaData = { acresInFarms: parseInt(valueStr) };
+            }
+
+            const enrichedMarketResult: EnrichedMarketData = {
                 geocoding: loc,
-                elevation: elevRes ? (await elevRes.json()).results[0]?.elevation : null,
-                weather: weatherRes ? await weatherRes.json() : null,
-                sunriseSunset: sunRes ? (await sunRes.json()).results : null,
-                country: countryRes ? (await countryRes.json())[0] : null,
-                earthquake: quakeRes ? await quakeRes.json() : null,
+                elevation: elevRes && elevRes.ok ? (await elevRes.json()).results[0]?.elevation : null,
+                weather: weatherRes && weatherRes.ok ? await weatherRes.json() : null,
+                sunriseSunset: sunRes && sunRes.ok ? (await sunRes.json()).results : null,
+                country: countryRes && countryRes.ok ? (await countryRes.json())[0] : null,
+                earthquake: quakeRes && quakeRes.ok ? await quakeRes.json() : null,
+                fccBroadband: fccData,
+                censusData,
+                usdaData,
                 lastFetched: Date.now(),
-                sourceIds: ['NOMINATIM', 'OPEN_ELEVATION', 'OPEN_METEO', 'SUNSET_ORG', 'USGS', 'REST_COUNTRIES']
+                sourceIds: ['NOMINATIM', 'OPEN_ELEVATION', 'OPEN_METEO', 'SUNSET_ORG', 'USGS', 'REST_COUNTRIES', 'FCC', 'CENSUS', 'USDA']
             };
 
-            setData(marketResult);
-            localStorage.setItem(`market_data_hub_${normalizedQuery}`, JSON.stringify(marketResult));
+            setData(enrichedMarketResult);
+            localStorage.setItem(`market_data_hub_${normalizedQuery}`, JSON.stringify(enrichedMarketResult));
             setProgress(100);
         } catch (err: any) {
             setError(err.message || "UPLINK_FAILURE: DATA_STREAM_INTERRUPTED");
@@ -142,14 +198,13 @@ const MarketIntelligence: React.FC = () => {
     );
 
     const KeyLink = () => (
-        <div className="flex items-center gap-3 p-4 bg-brand-gold/5 border border-brand-gold/10 rounded-2xl text-[9px] text-brand-gold font-bold uppercase tracking-widest cursor-pointer hover:bg-brand-gold/10 transition-all">
+        <button onClick={() => onNavigate('/data-tools/market/api-settings')} className="w-full flex items-center gap-3 p-4 bg-brand-gold/5 border border-brand-gold/10 rounded-2xl text-[9px] text-brand-gold font-bold uppercase tracking-widest cursor-pointer hover:bg-brand-gold/10 transition-all">
             <Settings size={12} /> INITIALIZE_API_KEY_REGISTRY
-        </div>
+        </button>
     );
 
     return (
         <div className="space-y-12 animate-fade-in max-w-7xl mx-auto pb-32">
-            {/* HUB HEADER / INPUT NODE */}
             <div className="bg-brand-950 border border-brand-gold/20 p-12 md:p-16 rounded-[4rem] relative overflow-hidden shadow-[0_80px_160px_-40px_rgba(0,0,0,0.8)]">
                 <div className="scanline-overlay opacity-5 pointer-events-none"></div>
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-gold/5 rounded-full blur-[200px] pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
@@ -206,65 +261,57 @@ const MarketIntelligence: React.FC = () => {
                 )}
             </div>
 
-            {/* MASTER DATA GRID */}
             {data && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     <DataCard title="Geospatial Hub" icon={MapPin} source="NOMINATIM / OPEN_ELEV">
                         <Metric label="Target Identifier" value={data.geocoding?.display_name?.split(',')[0]} />
-                        <Metric label="Topographic Height" value={`${data.elevation?.toFixed(1)}m`} sub="WGS84_INDEX" />
+                        <Metric label="Topographic Height" value={data.elevation ? `${data.elevation.toFixed(1)}m` : 'N/A'} sub="WGS84_INDEX" />
                         <Metric label="Coordinate Node" value={`${parseFloat(data.geocoding?.lat).toFixed(4)}, ${parseFloat(data.geocoding?.lon).toFixed(4)}`} />
                     </DataCard>
 
                     <DataCard title="Environmental Node" icon={CloudSun} source="OPEN_METEO_PRO">
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-2 gap-x-6">
                             <Metric label="Surface Temp" value={`${data.weather?.current?.temperature_2m}°C`} />
-                            <Metric label="Vapor Pressure" value={`${data.weather?.current?.surface_pressure} hPa`} />
+                            <Metric label="Wind Speed" value={`${data.weather?.current?.wind_speed_10m} km/h`} />
                         </div>
                         <Metric label="Air Quality (PM2.5)" value={`${data.weather?.hourly?.pm2_5?.[0] || 'N/A'} µg/m³`} sub="WHO_STANDARDS" />
-                        <Metric label="Air Quality (PM10)" value={`${data.weather?.hourly?.pm10?.[0] || 'N/A'} µg/m³`} />
                     </DataCard>
 
-                    <DataCard title="Celestial Sync" icon={Sunrise} source="SUN_SET_ORG">
-                        <div className="grid grid-cols-2 gap-6">
-                            <Metric label="Uplink Sunrise" value={new Date(data.sunriseSunset?.sunrise).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} />
-                            <Metric label="Uplink Sunset" value={new Date(data.sunriseSunset?.sunset).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} />
+                    <DataCard title="Socio-Economic Ledger" icon={Landmark} source="REST_COUNTRIES">
+                        <div className="flex items-center gap-4 mb-4">
+                            <img src={data.country?.flags?.svg} className="w-12 h-8 object-cover rounded shadow-2xl border border-white/10" alt="Flag" />
+                            <p className="font-black text-white text-xl uppercase tracking-tighter">{(data.country as any)?.name?.common}</p>
                         </div>
-                        <Metric label="Operational Window" value={`${Math.floor(data.sunriseSunset?.day_length / 3600)}h ${Math.floor((data.sunriseSunset?.day_length % 3600) / 60)}m`} sub="CIVIL_TWILIGHT" />
+                        <Metric label="Population" value={data.country?.population?.toLocaleString()} />
+                        <Metric label="Capital" value={data.country?.capital?.[0]} sub={data.country?.subregion} />
+                    </DataCard>
+
+                     <DataCard title="Connectivity Matrix" icon={Wifi} source="FCC_BROADBAND_MAP">
+                        <Metric label="Max Download" value={data.fccBroadband ? `${data.fccBroadband.maxAdvertisedDown} Mbps` : 'N/A'} sub="CONSUMER" />
+                        <Metric label="Max Upload" value={data.fccBroadband ? `${data.fccBroadband.maxAdvertisedUp} Mbps` : 'N/A'} />
+                        <Metric label="Providers" value={data.fccBroadband?.providers} />
+                    </DataCard>
+
+                    <DataCard title="Census Analytics" icon={Users} source="US_CENSUS_BUREAU" status={localStorage.getItem('api_key_census') ? 'active' : 'standby'} tier="institutional">
+                        {data.censusData ? <>
+                            <Metric label="County Population" value={data.censusData.population.toLocaleString()} />
+                            <Metric label="Median Income" value={`$${data.censusData.medianIncome.toLocaleString()}`} sub="HOUSEHOLD" />
+                        </> : <KeyLink />}
+                    </DataCard>
+
+                    <DataCard title="Agricultural Output" icon={Sprout} source="USDA_NASS_HUB" status={localStorage.getItem('api_key_usda') ? 'active' : 'standby'} tier="institutional">
+                        {data.usdaData ? <>
+                            <Metric label="Land In Farms" value={`${data.usdaData.acresInFarms.toLocaleString()} acres`} sub="2022_CENSUS" />
+                        </> : <KeyLink />}
+                    </DataCard>
+                    
+                    <DataCard title="Logistics & Traffic" icon={Building2} source="DOT_HPMS" status="standby" tier="institutional">
+                        <KeyLink/>
                     </DataCard>
 
                     <DataCard title="Natural Hazard Matrix" icon={ShieldAlert} source="USGS_GLOBAL">
                         <Metric label="Seismic Events" value={data.earthquake?.features?.length > 0 ? `${data.earthquake.features.length} Nodes` : "ZERO_DETECTION"} sub="100KM_RADIUS" />
                         <Metric label="Risk Level" value={data.earthquake?.features?.length > 3 ? "ELEVATED" : "STABLE"} alert={data.earthquake?.features?.length > 3} />
-                        <div className="p-4 bg-brand-950 rounded-2xl border border-white/5 text-[9px] text-white/30 font-medium leading-relaxed uppercase tracking-widest italic">
-                            EPA SUPERFUND & WILDFIRE MAPPING REQUIRES INSTITUTIONAL UPLINK.
-                        </div>
-                    </DataCard>
-
-                    <DataCard title="Socio-Economic Ledger" icon={Landmark} source="WORLD_BANK_REST">
-                        <div className="flex items-center gap-4 mb-6">
-                            <img src={data.country?.flags?.svg} className="w-12 h-8 object-cover rounded shadow-2xl border border-white/10" alt="Flag" />
-                            <p className="font-black text-white text-xl uppercase tracking-tighter">{(data.country as any)?.name?.common}</p>
-                        </div>
-                        <Metric label="Sovereign Currency" value={`${Object.keys(data.country?.currencies || {})[0]} - ${(Object.values(data.country?.currencies || {})[0] as any)?.name}`} />
-                        <Metric label="Regional Block" value={data.country?.region} sub={data.country?.subregion} />
-                    </DataCard>
-
-                    <DataCard title="Infrastructure Node" icon={Radio} source="FCC_DOT_SIM" status="standby" tier="institutional">
-                        <Metric label="Connectivity Density" value="OPTIMAL (250MBPS)" sub="FIBER_BACKBONE" />
-                        <Metric label="Logistics Latency" value="MODERATE (7.2)" sub="DOT_TRAFFIC_INDEX" />
-                        <KeyLink />
-                    </DataCard>
-
-                    <DataCard title="Census Analytics" icon={Fingerprint} source="US_CENSUS_BUREAU" status="standby" tier="institutional">
-                        <Metric label="Demographic Cluster" value="A-GRADE (TIER 1)" sub="MEDIAN_INCOME" />
-                        <Metric label="Growth Elasticity" value="+4.2% YoY" />
-                        <KeyLink />
-                    </DataCard>
-
-                    <DataCard title="Agricultural Output" icon={Sprout} source="USDA_NASS_HUB" status="standby" tier="institutional">
-                        <Metric label="Soil Fidelity Index" value="CLAY_LOAM_85" sub="NASS_SOIL_SURVEY" />
-                        <Metric label="Yield Potential" value="HIGH (QUADRANT 4)" />
-                        <KeyLink />
                     </DataCard>
 
                     <div className="bg-brand-gold/10 border-2 border-dashed border-brand-gold/30 rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center space-y-6 group hover:bg-brand-gold/20 transition-all">
@@ -275,7 +322,7 @@ const MarketIntelligence: React.FC = () => {
                         <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-xs">
                             Federgreen Capital Partners can configure bespoke data bridges for proprietary LPs.
                         </p>
-                        <button className="text-brand-gold text-[10px] font-black uppercase tracking-[0.5em] hover:text-white transition-colors">
+                        <button onClick={() => onNavigate('/contact')} className="text-brand-gold text-[10px] font-black uppercase tracking-[0.5em] hover:text-white transition-colors">
                             Contact Concierge →
                         </button>
                     </div>

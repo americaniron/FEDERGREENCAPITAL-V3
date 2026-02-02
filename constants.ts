@@ -255,6 +255,33 @@ export const PAGE_DATA: Record<string, PageContent> = {
       image: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2232&auto=format&fit=crop',
       sections: [{ title: 'Regulatory Node', content: 'Execute mandatory intake protocol.', type: 'compliance-hub' }]
   },
+  '/sectors': {
+    title: 'Sectors We Cover',
+    subtitle: 'Global Diversification & Specialized Expertise',
+    description: 'Our global investment strategy is diversified across twelve core sectors, each managed by a dedicated team of specialists with deep industry knowledge and operational expertise.',
+    image: 'https://images.unsplash.com/photo-1554224155-16954405a255?q=80&w=2070&auto=format&fit=crop',
+    sections: [
+      {
+        title: 'Operational Verticals',
+        content: 'Explore our key areas of institutional investment and strategic advisory. Each vertical represents a core pillar of our global capital deployment thesis.',
+        type: 'cards',
+        items: [
+          { title: 'Real Estate', desc: 'Strategic acquisition and management of prime global assets, from metropolitan high-rises to industrial logistics hubs.', link: '/sectors/real-estate' },
+          { title: 'Technology', desc: 'Investing in foundational technologies, including sovereign AI infrastructure, quantum computing, and enterprise-grade cybersecurity.', link: '/sectors/technology' },
+          { title: 'Health', desc: 'Capitalizing innovation in biotechnology, precision diagnostics, and the development of world-class medical facilities.', link: '/sectors/health' },
+          { title: 'Sports', desc: 'Acquiring and scaling professional sports franchises, stadium infrastructure, and global sports technology platforms.', link: '/sectors/sports' },
+          { title: 'Aerospace', desc: 'Financing the next frontier through orbital logistics, satellite constellations, and advanced aerospace manufacturing.', link: '/sectors/aerospace' },
+          { title: 'Renewable Energy', desc: 'Deploying institutional capital into high-yield renewable projects, including solar, wind, and green hydrogen hubs.', link: '/sectors/renewable-energy' },
+          { title: 'Film & Entertainment', desc: 'Strategic financing for major film productions, digital distribution networks, and immersive media technologies.', link: '/sectors/film-entertainment' },
+          { title: 'Sustainability', desc: 'Driving the circular economy through investments in waste-to-energy, water purification, and ESG-compliant industrial models.', link: '/sectors/sustainability' },
+          { title: 'Mining', desc: 'Securing the global supply chain via strategic investment in critical mineral extraction for technology and green energy sectors.', link: '/sectors/mining' },
+          { title: 'Food & Beverage', desc: 'Ensuring global supply chain resilience through investments in AgTech, vertical farming, and premium heritage brands.', link: '/sectors/food-beverage' },
+          { title: 'Manufacturing', desc: 'Financing the next industrial revolution with robotics, scaled 3D printing, and automated smart-factory ecosystems.', link: '/sectors/manufacturing' },
+          { title: 'Fashion & Beauty', desc: 'Acquiring and scaling prestigious global fashion and beauty brands through strategic capital and digital transformation.', link: '/sectors/fashion-beauty' }
+        ]
+      }
+    ]
+  },
   '/sectors/real-estate': {
     title: 'Strategic Real Estate Acquisition',
     subtitle: 'Global Prime Asset Management',

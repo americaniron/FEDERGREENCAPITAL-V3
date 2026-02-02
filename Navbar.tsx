@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, X, ChevronDown, Search, Lock, Sun, Moon, ArrowRight, Zap, Globe, Shield, Command, Terminal as TerminalIcon } from 'lucide-react';
 import { PantherLogo } from './PantherLogo';
 import { NavItem } from '../types';
@@ -9,69 +9,9 @@ interface NavbarProps {
     currentPath: string;
     onNavigate: (path: string) => void;
     onSearchClick: () => void;
-    isAdminUser?: boolean;
 }
 
-const MobileNavItem: React.FC<{ item: NavItem; level?: number; onNavigate: (path: string) => void; currentPath: string; }> = ({ item, level = 0, onNavigate, currentPath }) => {
-    const isBranchActive = useMemo(() => {
-        if (!item.subItems || item.path === '/') return false;
-        return currentPath.startsWith(item.path);
-    }, [item.path, item.subItems, currentPath]);
-
-    const [isExpanded, setIsExpanded] = useState(isBranchActive);
-
-    useEffect(() => {
-        setIsExpanded(isBranchActive);
-    }, [isBranchActive]);
-
-    const handleToggle = () => {
-        if (item.subItems) {
-            setIsExpanded(!isExpanded);
-        } else {
-            onNavigate(item.path);
-        }
-    };
-    
-    const isActive = currentPath === item.path;
-
-    return (
-        <div className={level > 0 ? 'my-1' : 'border-b border-white/5'}>
-            <button
-                className="w-full text-left py-3 flex justify-between items-center group"
-                onClick={handleToggle}
-            >
-                <span style={{ paddingLeft: `${level * 1}rem` }} className={`transition-colors ${
-                    isActive ? 'text-brand-gold' : ''
-                } ${
-                    level === 0 ? 'text-2xl font-heading font-black tracking-tighter uppercase text-brand-gold/80' :
-                    level === 1 ? 'text-base font-bold uppercase tracking-widest text-brand-gold/70 group-hover:text-brand-gold' :
-                    'text-sm text-brand-gold/50 group-hover:text-brand-gold/80'
-                }`}>
-                    {item.label}
-                </span>
-                {item.subItems && (
-                    <ChevronDown size={20} className={`text-brand-gold/40 transition-transform mr-2 ${isExpanded ? 'rotate-180' : ''}`} />
-                )}
-            </button>
-            {isExpanded && item.subItems && (
-                <div className={`pl-4 border-l-2 border-brand-gold/10 animate-fade-in`}>
-                    {item.subItems.map(subItem => (
-                        <MobileNavItem 
-                            key={subItem.path} 
-                            item={subItem} 
-                            level={level + 1} 
-                            onNavigate={onNavigate}
-                            currentPath={currentPath}
-                        />
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
-
-
-const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, onSearchClick, isAdminUser }) => {
+const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, onSearchClick }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [activeMega, setActiveMega] = useState<string | null>(null);
@@ -124,7 +64,7 @@ const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, on
                                         className={`px-3 xl:px-4 py-2 rounded-xl font-bold text-[9px] xl:text-[10px] tracking-[0.2em] uppercase transition-all duration-300 relative group/btn ${
                                             activeMega === item.label || (currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path)))
                                                 ? 'text-brand-gold bg-white/5' 
-                                                : 'text-brand-gold/70 hover:text-brand-gold hover:bg-white/5'
+                                                : 'text-white/70 hover:text-white hover:bg-white/5'
                                         }`}
                                         onClick={() => !item.subItems && handleNav(item.path)}
                                     >
@@ -202,16 +142,6 @@ const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, on
                             <Search size={20} />
                         </button>
 
-                        {isAdminUser && (
-                            <button
-                                onClick={() => handleNav('/admin')}
-                                className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-brand-gold/10 text-brand-gold border border-brand-gold/20 rounded-xl text-[9px] uppercase tracking-[0.3em] hover:bg-brand-gold hover:text-brand-950 transition-all"
-                            >
-                                <Shield size={12} />
-                                Admin Portal
-                            </button>
-                        )}
-
                         <button 
                             onClick={() => handleNav('/portal')}
                             className="relative group px-5 sm:px-8 py-2.5 bg-white text-brand-950 font-black rounded-xl text-[9px] sm:text-[10px] uppercase tracking-[0.3em] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-brand-gold/30 hover:bg-brand-gold overflow-hidden"
@@ -243,7 +173,7 @@ const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, on
                 <div className="absolute inset-0 bg-gradient-to-b from-brand-950 via-brand-900/20 to-brand-950 pointer-events-none"></div>
                 
                 <div className="px-6 py-8 space-y-8 relative z-10">
-                    <div className={`grid ${isAdminUser ? 'grid-cols-3' : 'grid-cols-2'} gap-4`}>
+                    <div className="grid grid-cols-2 gap-4">
                         <button onClick={() => handleNav('/portal')} className="flex flex-col items-center gap-3 p-6 glass rounded-2xl border-brand-gold/20">
                             <TerminalIcon size={24} className="text-brand-gold" />
                             <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Terminal</span>
@@ -252,22 +182,35 @@ const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, on
                             <Search size={24} className="text-brand-gold" />
                             <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Search</span>
                         </button>
-                        {isAdminUser && (
-                            <button onClick={() => handleNav('/admin')} className="flex flex-col items-center gap-3 p-6 glass rounded-2xl border-brand-gold/20">
-                                <Shield size={24} className="text-brand-gold" />
-                                <span className="text-[9px] font-black uppercase tracking-widest text-white/60">Admin</span>
-                            </button>
-                        )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         {navigation.map((item) => (
-                            <MobileNavItem 
-                                key={item.label} 
-                                item={item} 
-                                onNavigate={handleNav}
-                                currentPath={currentPath}
-                            />
+                            <div key={item.label} className="border-b border-white/5 pb-2">
+                                <button 
+                                    className={`w-full text-left py-3 text-2xl font-heading font-black tracking-tighter uppercase transition-colors flex justify-between items-center ${
+                                        currentPath === item.path ? 'text-brand-gold' : 'text-white'
+                                    }`}
+                                    onClick={() => item.subItems ? setActiveMega(activeMega === item.label ? null : item.label) : handleNav(item.path)}
+                                >
+                                    {item.label}
+                                    {item.subItems && <ChevronDown size={20} className={`text-brand-gold/40 transition-transform ${activeMega === item.label ? 'rotate-180' : ''}`} />}
+                                </button>
+                                
+                                {item.subItems && activeMega === item.label && (
+                                    <div className="grid grid-cols-1 gap-1 py-4 pl-4 border-l border-brand-gold/20 animate-fade-in bg-white/5 rounded-r-2xl">
+                                        {item.subItems.map((sub) => (
+                                            <button 
+                                                key={sub.path} 
+                                                onClick={() => handleNav(sub.path)}
+                                                className="block w-full text-left py-3 px-4 text-sm font-bold text-white/70 active:text-brand-gold hover:text-white uppercase tracking-widest"
+                                            >
+                                                {sub.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>

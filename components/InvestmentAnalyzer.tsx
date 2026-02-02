@@ -1,8 +1,17 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { analyzeInvestmentStrategy } from '../services/geminiService';
-import { Loader2, Zap, ShieldCheck, FileText, CheckCircle, AlertTriangle, Terminal as TerminalIcon, Cpu, Activity, ShieldAlert, BarChart3, Search, Fingerprint, Globe, Shield } from 'lucide-react';
+import { 
+    Loader2, Zap, ShieldCheck, FileText, CheckCircle, 
+    AlertTriangle, Terminal as TerminalIcon, Cpu, Activity, 
+    ShieldAlert, BarChart3, Search, Fingerprint, Globe, 
+    Shield, Clock, Target, TrendingUp 
+} from 'lucide-react';
 import { PantherLogo } from './PantherLogo';
+
+interface InvestmentAnalyzerProps {
+    toolId?: string;
+}
 
 const LOG_PHRASES = [
     "INITIALIZING SOVEREIGN_CORE_V4...",
@@ -17,7 +26,7 @@ const LOG_PHRASES = [
     "FINALIZING STRATEGIC VERDICT..."
 ];
 
-const InvestmentAnalyzer: React.FC = () => {
+const InvestmentAnalyzer: React.FC<InvestmentAnalyzerProps> = ({ toolId }) => {
     const [thesis, setThesis] = useState('');
     const [assumptions, setAssumptions] = useState('');
     const [metrics, setMetrics] = useState('');
@@ -25,6 +34,12 @@ const InvestmentAnalyzer: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [currentLog, setCurrentLog] = useState(0);
+    
+    // New Strategic Parameters
+    const [targetIrr, setTargetIrr] = useState(18);
+    const [riskTolerance, setRiskTolerance] = useState('Institutional');
+    const [horizon, setHorizon] = useState(5);
+
     const logIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     useEffect(() => {
@@ -38,7 +53,7 @@ const InvestmentAnalyzer: React.FC = () => {
                         clearInterval(timer);
                         return 100;
                     }
-                    return prev + 0.3; // Slower, more deliberate progress
+                    return prev + 0.3;
                 });
             }, 40);
 
@@ -58,8 +73,13 @@ const InvestmentAnalyzer: React.FC = () => {
         if (!thesis) return;
         const fullStrategy = `
             Core Thesis: ${thesis}
+            Strategic Parameters:
+            - Target Net IRR: ${targetIrr}%
+            - Risk Tolerance Profile: ${riskTolerance}
+            - Investment Horizon: ${horizon} Years
             Key Assumptions: ${assumptions || 'Not provided'}
-            Target Metrics: ${metrics || 'Not provided'}
+            Additional Target Metrics: ${metrics || 'Not provided'}
+            Context: This is a ${toolId || 'general'} strategic audit.
         `;
         setLoading(true);
         setAnalysis('');
@@ -78,7 +98,7 @@ const InvestmentAnalyzer: React.FC = () => {
         let currentSection: keyof typeof sections | null = null;
 
         text.split('\n').forEach(line => {
-            const upperLine = line.toUpperCase().replace(/[*:_]/g, '').trim();
+            const upperLine = line.toUpperCase().replace(/[*:_:]/g, '').trim();
             if (upperLine in sections) {
                 currentSection = upperLine as keyof typeof sections;
             } else if (currentSection) {
@@ -144,9 +164,6 @@ const InvestmentAnalyzer: React.FC = () => {
                                 <span className="px-4 py-1.5 bg-brand-gold/10 text-brand-gold rounded-full text-[10px] font-mono font-extrabold uppercase tracking-widest border border-brand-gold/30 flex items-center gap-3">
                                     <Cpu size={12} /> Gemini 3.0 Pro Active
                                 </span>
-                                <div className="h-1 w-20 bg-white/5 rounded-full overflow-hidden border border-white/10">
-                                    <div className="h-full bg-brand-gold animate-shimmer"></div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -155,15 +172,62 @@ const InvestmentAnalyzer: React.FC = () => {
                             <p className="text-[10px] font-mono font-bold text-white/20 uppercase tracking-widest">Logic Fidelity</p>
                             <p className="text-brand-terminal font-mono text-sm font-black mt-1 tracking-widest">99.82%_STABLE</p>
                         </div>
-                        <div className="px-8 py-5 bg-white/5 border border-white/10 rounded-3xl flex flex-col items-end shadow-inner">
-                            <p className="text-[10px] font-mono font-bold text-white/20 uppercase tracking-widest">Latency</p>
-                            <p className="text-brand-gold font-mono text-sm font-black mt-1 tracking-widest">0.02ms_UPLINK</p>
-                        </div>
                     </div>
                 </header>
                 
                 {!analysis && (
                     <div className="space-y-12 animate-fade-in max-w-6xl mx-auto">
+                        
+                        {/* New Structured Parameter Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                            <div className="bg-brand-950/60 border border-brand-gold/20 p-8 rounded-[2.5rem] space-y-4 shadow-xl">
+                                <div className="flex items-center gap-3 text-brand-gold mb-2">
+                                    <TrendingUp size={18} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Target Net IRR</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <input 
+                                        type="range" min="5" max="50" value={targetIrr} 
+                                        onChange={(e) => setTargetIrr(parseInt(e.target.value))}
+                                        className="flex-1 accent-brand-gold h-1 bg-white/10 rounded-full appearance-none cursor-pointer"
+                                    />
+                                    <span className="text-2xl font-heading font-black text-white w-16 text-right">{targetIrr}%</span>
+                                </div>
+                            </div>
+
+                            <div className="bg-brand-950/60 border border-brand-gold/20 p-8 rounded-[2.5rem] space-y-4 shadow-xl">
+                                <div className="flex items-center gap-3 text-brand-gold mb-2">
+                                    <Shield size={18} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Risk Profile</span>
+                                </div>
+                                <select 
+                                    value={riskTolerance}
+                                    onChange={(e) => setRiskTolerance(e.target.value)}
+                                    className="w-full bg-transparent text-white font-heading font-bold text-lg focus:outline-none cursor-pointer"
+                                >
+                                    <option className="bg-brand-950">Conservative</option>
+                                    <option className="bg-brand-950">Institutional</option>
+                                    <option className="bg-brand-950">Venture/Growth</option>
+                                    <option className="bg-brand-950">High-Leverage</option>
+                                </select>
+                            </div>
+
+                            <div className="bg-brand-950/60 border border-brand-gold/20 p-8 rounded-[2.5rem] space-y-4 shadow-xl">
+                                <div className="flex items-center gap-3 text-brand-gold mb-2">
+                                    <Clock size={18} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Capital Horizon</span>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <input 
+                                        type="range" min="1" max="30" value={horizon} 
+                                        onChange={(e) => setHorizon(parseInt(e.target.value))}
+                                        className="flex-1 accent-brand-gold h-1 bg-white/10 rounded-full appearance-none cursor-pointer"
+                                    />
+                                    <span className="text-2xl font-heading font-black text-white w-16 text-right">{horizon}y</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="relative group/field">
                             <div className="absolute -top-4 left-10 px-5 bg-brand-950/80 backdrop-blur-md text-[11px] font-heading font-black text-brand-gold uppercase tracking-[0.5em] z-20 transition-all group-focus-within/field:text-white flex items-center gap-3">
                                 <TerminalIcon size={14} /> Primary Investment Thesis
@@ -184,7 +248,7 @@ const InvestmentAnalyzer: React.FC = () => {
                                 <label className="absolute -top-3 left-8 px-4 bg-brand-950/80 backdrop-blur-md text-[10px] font-heading font-extrabold text-slate-500 uppercase tracking-widest z-20">Assumptions Matrix</label>
                                 <textarea
                                     className="w-full p-10 rounded-[3rem] bg-white/5 border border-white/10 text-white placeholder-white/10 focus:ring-8 focus:ring-brand-gold/5 focus:border-brand-gold/30 outline-none h-44 transition-all text-sm font-mono leading-relaxed shadow-inner"
-                                    placeholder="Input baseline variables (e.g., Target LTV, Exit Cap, IRR benchmark)..."
+                                    placeholder="Input baseline variables (e.g., Target LTV, Exit Cap)..."
                                     value={assumptions}
                                     onChange={(e) => setAssumptions(e.target.value)}
                                 />
@@ -193,7 +257,7 @@ const InvestmentAnalyzer: React.FC = () => {
                                 <label className="absolute -top-3 left-8 px-4 bg-brand-950/80 backdrop-blur-md text-[10px] font-heading font-extrabold text-slate-500 uppercase tracking-widest z-20">Target Benchmarks</label>
                                 <textarea
                                     className="w-full p-10 rounded-[3rem] bg-white/5 border border-white/10 text-white placeholder-white/10 focus:ring-8 focus:ring-brand-gold/5 focus:border-brand-gold/30 outline-none h-44 transition-all text-sm font-mono leading-relaxed shadow-inner"
-                                    placeholder="Define desired alpha (e.g., 22% Net IRR, 2.5x Multiplier)..."
+                                    placeholder="Define desired alpha (e.g., 2.5x Multiplier)..."
                                     value={metrics}
                                     onChange={(e) => setMetrics(e.target.value)}
                                 />
@@ -224,12 +288,6 @@ const InvestmentAnalyzer: React.FC = () => {
                                     <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden border border-white/10 p-1 relative z-10">
                                         <div className="h-full bg-brand-gold shadow-[0_0_30px_rgba(212,175,55,0.8)] rounded-full transition-all duration-300 ease-out" style={{ width: `${progress}%` }}></div>
                                     </div>
-                                    <div className="grid grid-cols-4 gap-4 relative z-10">
-                                        {[1, 2, 3, 4].map(i => (
-                                            <div key={i} className={`h-1 rounded-full transition-all duration-1000 ${progress > (i*25) ? 'bg-brand-gold/40' : 'bg-white/5'}`}></div>
-                                        ))}
-                                    </div>
-                                    <p className="text-center text-[10px] text-white/30 font-black uppercase tracking-[0.4em] animate-pulse">Establishing diagnostic consensus across distributed sovereign reasoning clusters...</p>
                                 </div>
                             )}
                         </div>
@@ -245,7 +303,7 @@ const InvestmentAnalyzer: React.FC = () => {
                                      <p className="text-[12px] font-black text-brand-gold uppercase tracking-[0.6em]">Audit Master Log</p>
                                 </div>
                                 <h4 className="text-6xl md:text-7xl font-heading font-black text-white tracking-tighter uppercase leading-none">Diagnostic Result.</h4>
-                                <p className="text-white/40 text-lg font-medium leading-relaxed max-w-xl">Deep-reasoning synthesis complete. The following parameters represent the institutional risk-adjusted alpha projections.</p>
+                                <p className="text-white/40 text-lg font-medium leading-relaxed max-w-xl">Deep-reasoning synthesis complete. Parameters aligned with {targetIrr}% Target IRR and {riskTolerance} Risk Profile.</p>
                             </div>
                             <button 
                                 onClick={() => { setAnalysis(''); setThesis(''); }} 
@@ -258,28 +316,6 @@ const InvestmentAnalyzer: React.FC = () => {
                         <div className="relative">
                             <div className="scanline-overlay opacity-10 rounded-[4rem] pointer-events-none"></div>
                             {renderAnalysis(analysis)}
-                        </div>
-
-                        <div className="bg-brand-gold/10 border border-brand-gold/30 p-12 rounded-[4rem] flex flex-col md:flex-row items-center justify-between group/audit shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] relative overflow-hidden">
-                             <div className="absolute inset-0 bg-gradient-to-r from-brand-gold/5 via-transparent to-transparent"></div>
-                             <div className="flex items-center gap-10 relative z-10">
-                                <div className="w-24 h-24 bg-brand-950 rounded-[2.5rem] flex items-center justify-center text-brand-gold border border-brand-gold/20 shadow-[inset_0_0_20px_rgba(212,175,55,0.1)] group-hover/audit:rotate-12 transition-all duration-700 group-hover/audit:scale-110">
-                                    <ShieldCheck size={48} />
-                                </div>
-                                <div>
-                                    <p className="text-white font-heading font-black text-3xl tracking-tight uppercase">Federgreen Endorsement</p>
-                                    <p className="text-brand-gold/60 text-xs font-mono font-black uppercase tracking-[0.4em] mt-2">Audit_Protocol_Verified_Node_G3P</p>
-                                </div>
-                             </div>
-                             <div className="hidden lg:flex items-center gap-6 relative z-10">
-                                 <div className="flex flex-col items-end mr-6">
-                                     <span className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Authenticity Hash</span>
-                                     <span className="text-brand-gold/40 font-mono text-[9px]">0xFD82...E391</span>
-                                 </div>
-                                 <div className="flex gap-2">
-                                    {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="w-2 h-10 bg-brand-gold rounded-full opacity-30 animate-pulse" style={{animationDelay: `${i*150}ms`}}></div>)}
-                                 </div>
-                             </div>
                         </div>
                     </div>
                 )}

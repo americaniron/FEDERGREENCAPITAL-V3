@@ -18,11 +18,10 @@ interface FooterProps {
     footerLinks: {
         access: FooterLinkGroup;
         legal: FooterLinkGroup;
-    };
-    isAdminUser?: boolean;
+    }
 }
 
-const Footer: React.FC<FooterProps> = ({ onNavigate, footerLinks, isAdminUser }) => {
+const Footer: React.FC<FooterProps> = ({ onNavigate, footerLinks }) => {
     
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -109,12 +108,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, footerLinks, isAdminUser })
                 </div>
 
                 <div className="pt-12 border-t border-brand-800/50 flex flex-col lg:flex-row justify-between items-center text-[10px] text-white/20 font-black uppercase tracking-[0.5em] gap-8">
-                    <div className="flex flex-col sm:flex-row items-center gap-x-6 gap-y-4 text-center lg:text-left">
-                        <p>&copy; {new Date().getFullYear()} FEDERGREEN CAPITAL PARTNERS. ALL SYSTEM NODES PROTECTED.</p>
-                        <button onClick={() => onNavigate('/admin')} className="text-brand-gold hover:text-white transition-colors whitespace-nowrap font-mono text-[11px] font-black tracking-widest">
-                           {isAdminUser ? '[ ADMIN PORTAL ]' : '[ ADMIN LOGIN ]'}
-                        </button>
-                    </div>
+                    <p className="text-center lg:text-left">&copy; {new Date().getFullYear()} FEDERGREEN CAPITAL PARTNERS. ALL SYSTEM NODES PROTECTED.</p>
                     <div className="flex flex-wrap justify-center gap-x-10 gap-y-4">
                         <span className="hover:text-white transition-colors cursor-default">NEW YORK</span>
                         <span className="hover:text-white transition-colors cursor-default">LONDON</span>

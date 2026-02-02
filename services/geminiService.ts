@@ -1,5 +1,6 @@
 
-import { GoogleGenAI, Modality } from "@google/genai";
+
+import { GoogleGenAI, Modality, GenerateContentParameters } from "@google/genai";
 
 // Create a single, memoized instance of the AI client.
 const ai = (() => {
@@ -25,7 +26,8 @@ const API_UNAVAILABLE_ANALYSIS_RESPONSE = "CRITICAL: REASONING_ENGINE_UNAVAILABL
 export const chatWithGemini = async (message: string, history: { role: string; text: string }[]) => {
   if (!ai) return API_UNAVAILABLE_CHAT_RESPONSE;
 
-  const contents = history.map(h => ({
+  // FIX: Map history to the correct format for `contents`
+  const contents: GenerateContentParameters['contents'] = history.map(h => ({
       role: h.role === 'model' ? 'model' : 'user',
       parts: [{ text: h.text }]
   }));
@@ -56,12 +58,32 @@ export const chatWithGemini = async (message: string, history: { role: string; t
 
 export const analyzeInvestmentStrategy = async (strategyDescription: string) => {
     if (!ai) return API_UNAVAILABLE_ANALYSIS_RESPONSE;
+
+    const prompt = `Execute an institutional-grade diagnostic audit for the following strategic thesis:
+---
+${strategyDescription}
+---
+
+Your analysis MUST be structured with the following four sections, using these exact uppercase headings followed by a colon:
+
+RISK ASSESSMENT:
+[Your detailed risk analysis here, including potential vulnerabilities and mitigation factors.]
+
+CAPITAL EFFICIENCY:
+[Your analysis on capital efficiency, IRR velocity, and potential for alpha generation.]
+
+MARKET ALIGNMENT:
+[Your analysis on market trends, competitive landscape, and sovereign/regulatory alignment.]
+
+VERDICT:
+[Your final strategic verdict and a concise summary of the investment's viability.]
+
+Provide deep, institutional-grade reasoning within each section. Use professional terminology.`;
     
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-3-pro-preview',
-            contents: `Execute institutional-grade diagnostic audit for the following strategic thesis: ${strategyDescription}. 
-            Provide deep-reasoning on risk-mitigation, sovereign alignment, and IRR velocity.`,
+            contents: prompt,
             config: {
                 thinkingConfig: { thinkingBudget: 4000 },
             }
@@ -118,6 +140,7 @@ export const generateSpeech = async (text: string): Promise<string | null> => {
             model: "gemini-2.5-flash-preview-tts",
             contents: [{ parts: [{ text }] }],
             config: {
+                // FIX: responseModalities must be an array containing Modality.AUDIO
                 responseModalities: [Modality.AUDIO],
                 speechConfig: {
                     voiceConfig: {

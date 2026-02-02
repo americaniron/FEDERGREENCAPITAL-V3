@@ -96,3 +96,24 @@ export interface ToolResult {
   secondaryMetrics?: { label: string; value: string; hint?: string }[];
   charts?: { type: 'bar' | 'line' | 'pie'; data: any[] }[];
 }
+
+// --- PHASE 5: ENTITLEMENTS & AUDITING ---
+
+export interface SiteUser {
+  id: string;
+  email: string;
+  membershipTier: string; // e.g., 'Free', 'Pro'
+  entitlementOverrides: Record<string, boolean>; // toolId -> hasAccess
+}
+
+export interface AuditLogEntry {
+  id: string;
+  timestamp: number;
+  adminEmail: string;
+  action: string; // e.g., "Updated User Entitlements"
+  entity: string; // e.g., "User: john.doe@example.com"
+  details: {
+    before: any;
+    after: any;
+  };
+}

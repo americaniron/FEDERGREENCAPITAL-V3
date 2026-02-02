@@ -2,38 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { analyzeBusinessModel } from '../../services/geminiService';
 import { Input, TextArea } from '../ui/FormElements';
-/* Added missing Printer import */
+// FIX: Added missing Printer import
 import { BrainCircuit, Loader2, Target, Shield, Users, ArrowRight, Zap, TrendingUp, Info, BarChart3, Maximize, Activity, Layout, Database, Globe, Fingerprint, Cpu, Search, Printer } from 'lucide-react';
 import { PantherLogo } from '../PantherLogo';
 
 const PRESETS = [
-    {
-        name: 'Luxury Auto GCC',
-        biz: 'Ultra-Luxury Automotive',
-        loc: 'UAE & GCC Region',
-        data: {
-            market_size: {
-                tam: "$120B+",
-                tam_logic: "Aggregate GCC mobility spend for premium and luxury segments, indexed against rising UHNW migration patterns in Dubai and Riyadh.",
-                sam: "$25.4B",
-                sam_logic: "Addressable ultra-luxury market (MSRP >$150k) across the UAE, Qatar, and KSA 'Vision 2030' corridors.",
-                som: "$1.8B",
-                som_logic: "Targeted 7.2% capture of the regional EV-Hypercar niche within a 36-month deployment window."
-            },
-            moat: {
-                brand_equity: { score: 9.2, description: "Sovereign-level prestige alignment and legacy exclusivity." },
-                distribution_network: { score: 8.5, description: "Exclusive regional showroom footprints in Prime Metropolitan Hubs." },
-                proprietary_tech: { score: 7.8, description: "Next-gen solid-state battery integration for desert-extremes." },
-                capital_access: { score: 9.5, description: "Direct LP ties to regional Sovereign Wealth Funds." }
-            }
-        }
-    },
-    {
-        name: 'Green Tech EU',
-        biz: 'Hydrogen Infrastructure',
-        loc: 'European Union',
-        data: {} // Empty for real AI run
-    }
+    { name: 'Luxury Auto GCC', biz: 'Ultra-Luxury Automotive', loc: 'UAE & GCC Region' },
+    { name: 'Green Tech EU', biz: 'Green Hydrogen Infrastructure', loc: 'European Union' },
+    { name: 'Sovereign AI APAC', biz: 'Sovereign AI Cloud Infrastructure', loc: 'APAC' }
 ];
 
 const BusinessIntelligence: React.FC = () => {
@@ -43,6 +19,7 @@ const BusinessIntelligence: React.FC = () => {
     const [result, setResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [analysisQueued, setAnalysisQueued] = useState(false);
 
     useEffect(() => {
         let interval: any;
@@ -55,14 +32,19 @@ const BusinessIntelligence: React.FC = () => {
         return () => clearInterval(interval);
     }, [loading]);
 
+    useEffect(() => {
+        if (analysisQueued && bizType && location) {
+            handleRun();
+            setAnalysisQueued(false);
+        }
+    }, [analysisQueued, bizType, location, mode]);
+
+
     const handlePreset = (preset: typeof PRESETS[0]) => {
         setBizType(preset.biz);
         setLocation(preset.loc);
-        if (preset.data[mode as keyof typeof preset.data]) {
-            setResult(preset.data[mode as keyof typeof preset.data]);
-        } else {
-            handleRun();
-        }
+        setResult(null);
+        setAnalysisQueued(true);
     };
 
     const handleRun = async () => {

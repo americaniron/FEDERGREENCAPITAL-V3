@@ -44,10 +44,13 @@ const BusinessPlanBuilder: React.FC<BusinessPlanBuilderProps> = ({ scenario }) =
         financials: { 
             baseRevenue: 1250000, 
             growthRate: 22, 
-            cogsPercent: 35, 
+            grossMargin: 75,
             opexPercent: 18,
             cac: 450,
-            ltv: 2400
+            ltv: 2400,
+            churnRate: 15,
+            initialCustomers: 500,
+            marketingSpendY1: 250000,
         },
         drafts: {},
         tone: 'Institutional Boardroom',
@@ -60,14 +63,33 @@ const BusinessPlanBuilder: React.FC<BusinessPlanBuilderProps> = ({ scenario }) =
     const activeStep = STEPS[currentStep];
 
     const forecast = useMemo(() => {
-        const { baseRevenue, growthRate, cogsPercent, opexPercent } = planData.financials;
-        return [1, 2, 3, 4, 5].map(y => {
-            const rev = baseRevenue * Math.pow(1 + growthRate / 100, y - 1);
-            const cogs = rev * (cogsPercent / 100);
-            const opex = rev * (opexPercent / 100);
-            const net = rev - (cogs + opex);
-            return { year: y, revenue: rev, cogs, opex, net };
-        });
+        const { 
+            initialCustomers, marketingSpendY1, cac, ltv, churnRate, 
+            grossMargin, opexPercent, growthRate 
+        } = planData.financials;
+
+        let customers = initialCustomers;
+        let marketingSpend = marketingSpendY1;
+        const results = [];
+
+        for (let y = 1; y <= 5; y++) {
+            const churnedCustomers = customers * (churnRate / 100);
+            const newCustomers = marketingSpend / cac;
+            const endingCustomers = customers - churnedCustomers + newCustomers;
+            
+            const revenue = endingCustomers * (ltv / (1 / (churnRate/100) || 1)); // Simplified LTV to annual revenue conversion
+            const cogs = revenue * (1 - (grossMargin / 100));
+            const fixedOpex = (planData.financials.baseRevenue * (opexPercent / 100)) * Math.pow(1.05, y - 1); // Fixed opex with inflation
+            const opex = fixedOpex + marketingSpend;
+            const net = revenue - cogs - opex;
+
+            results.push({ year: y, revenue, cogs, opex, net, customers: endingCustomers });
+            
+            // For next year
+            customers = endingCustomers;
+            marketingSpend *= (1 + growthRate / 100); // Grow marketing spend
+        }
+        return results;
     }, [planData.financials]);
 
     const handleInput = (key: string, value: any, subkey?: string) => {
@@ -125,43 +147,17 @@ const BusinessPlanBuilder: React.FC<BusinessPlanBuilderProps> = ({ scenario }) =
             <div className="space-y-6 md:space-y-8 animate-fade-in">
                 <div className="bg-brand-950 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-brand-gold/10">
                     <h4 className="text-[10px] font-bold text-brand-gold uppercase tracking-[0.3em] mb-6 md:mb-8 border-b border-white/5 pb-4 flex items-center gap-3">
-                        <Maximize2 size={14} /> Logic Tuning Node
+                        <Maximize2 size={14} /> SaaS & Growth Logic
                     </h4>
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Input 
-                                label="Year 1 Revenue" 
-                                type="number" 
-                                value={planData.financials.baseRevenue} 
-                                onChange={e => handleInput('financials', parseFloat(e.target.value) || 0, 'baseRevenue')}
-                            />
-                            <Input 
-                                label="CAC Target" 
-                                type="number" 
-                                value={planData.financials.cac}
-                                onChange={e => handleInput('financials', parseFloat(e.target.value) || 0, 'cac')}
-                            />
-                        </div>
-                        <RangeSlider 
-                            label="Annual Growth %" 
-                            value={planData.financials.growthRate} 
-                            suffix="%"
-                            onChange={(e: any) => handleInput('financials', parseInt(e.target.value), 'growthRate')}
-                        />
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                             <RangeSlider 
-                                label="COGS %" 
-                                value={planData.financials.cogsPercent} 
-                                suffix="%"
-                                onChange={(e: any) => handleInput('financials', parseInt(e.target.value), 'cogsPercent')}
-                            />
-                             <RangeSlider 
-                                label="OpEx %" 
-                                value={planData.financials.opexPercent} 
-                                suffix="%"
-                                onChange={(e: any) => handleInput('financials', parseInt(e.target.value), 'opexPercent')}
-                            />
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Input label="CAC Target" type="number" value={planData.financials.cac} onChange={e => handleInput('financials', parseFloat(e.target.value) || 0, 'cac')} />
+                        <Input label="Customer LTV" type="number" value={planData.financials.ltv} onChange={e => handleInput('financials', parseFloat(e.target.value) || 0, 'ltv')} />
+                        <Input label="Initial Customers" type="number" value={planData.financials.initialCustomers} onChange={e => handleInput('financials', parseFloat(e.target.value) || 0, 'initialCustomers')} />
+                        <Input label="Marketing Spend Y1" type="number" value={planData.financials.marketingSpendY1} onChange={e => handleInput('financials', parseFloat(e.target.value) || 0, 'marketingSpendY1')} />
+                        <RangeSlider label="Annual Churn %" value={planData.financials.churnRate} suffix="%" onChange={(e: any) => handleInput('financials', parseInt(e.target.value), 'churnRate')} />
+                        <RangeSlider label="Gross Margin %" value={planData.financials.grossMargin} suffix="%" onChange={(e: any) => handleInput('financials', parseInt(e.target.value), 'grossMargin')} />
+                        <RangeSlider label="Marketing Growth %" value={planData.financials.growthRate} suffix="%" onChange={(e: any) => handleInput('financials', parseInt(e.target.value), 'growthRate')} />
+                        <RangeSlider label="Fixed OpEx % of Rev" value={planData.financials.opexPercent} suffix="%" onChange={(e: any) => handleInput('financials', parseInt(e.target.value), 'opexPercent')} />
                     </div>
                 </div>
 

@@ -15,26 +15,26 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              heading: ['Montserrat', 'sans-serif'],
-              mono: ['Fira Code', 'monospace'],
+              sans: ['var(--font-sans)', 'sans-serif'],
+              heading: ['var(--font-heading)', 'sans-serif'],
+              mono: ['var(--font-mono)', 'monospace'],
             },
             colors: {
               brand: {
-                50: '#f4eff7',
-                100: '#e8dff0',
-                200: '#d1bfe0',
-                300: '#ba9ed1',
-                400: '#a37ec1',
-                500: '#8b5db2',
-                600: '#744599',
-                700: '#4B2C71', 
-                800: '#412562',
-                900: '#362052',
-                950: '#1d1135', // Lightened from #1a0f2e for a softer, more vibrant background
-                gold: '#d4af37', 
-                gold_light: '#f3d267',
-                terminal: '#00ff41',
+                50: 'var(--color-brand-50)',
+                100: 'var(--color-brand-100)',
+                200: 'var(--color-brand-200)',
+                300: 'var(--color-brand-300)',
+                400: 'var(--color-brand-400)',
+                500: 'var(--color-brand-500)',
+                600: 'var(--color-brand-600)',
+                700: 'var(--color-brand-700)', 
+                800: 'var(--color-brand-800)',
+                900: 'var(--color-brand-900)',
+                950: 'var(--color-brand-950)',
+                gold: 'var(--color-brand-gold)', 
+                gold_light: 'var(--color-brand-gold_light)',
+                terminal: 'var(--color-brand-terminal)',
               }
             },
             animation: {
@@ -93,11 +93,33 @@
     </script>
     <style>
       :root {
+          /* Default Theme Colors */
+          --color-brand-50: #f4eff7;
+          --color-brand-100: #e8dff0;
+          --color-brand-200: #d1bfe0;
+          --color-brand-300: #ba9ed1;
+          --color-brand-400: #a37ec1;
+          --color-brand-500: #8b5db2;
+          --color-brand-600: #744599;
+          --color-brand-700: #4B2C71;
+          --color-brand-800: #412562;
+          --color-brand-900: #362052;
+          --color-brand-950: #1d1135;
+          --color-brand-gold: #d4af37;
+          --color-brand-gold_light: #f3d267;
+          --color-brand-terminal: #00ff41;
+
+          /* Default Typography */
+          --font-sans: 'Inter';
+          --font-heading: 'Montserrat';
+          --font-mono: 'Fira Code';
+
+          /* Misc */
           --spotlight-x: 50%;
           --spotlight-y: 50%;
       }
       ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #1d1135; }
+      ::-webkit-scrollbar-track { background: var(--color-brand-950); }
       ::-webkit-scrollbar-thumb {
         background: rgba(212, 175, 55, 0.2); 
         border-radius: 10px;
@@ -105,7 +127,7 @@
       ::-webkit-scrollbar-thumb:hover { background-color: rgba(212, 175, 55, 0.4); }
       
       .glass {
-        background: rgba(43, 25, 66, 0.2); /* Even lighter for background image visibility */
+        background: rgba(43, 25, 66, 0.2);
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
         border: 1px solid rgba(212, 175, 55, 0.1);
@@ -140,8 +162,8 @@
       }
 
       .terminal-text {
-        font-family: 'Fira Code', monospace;
-        color: #d4af37;
+        font-family: var(--font-mono), monospace;
+        color: var(--color-brand-gold);
         text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
       }
 
@@ -191,5 +213,6 @@
 </head>
   <body class="bg-brand-950 text-white antialiased font-sans selection:bg-brand-gold selection:text-brand-950 overflow-x-hidden">
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

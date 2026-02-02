@@ -15,9 +15,10 @@ const ApiSettings: React.FC = () => {
     const [saved, setSaved] = useState(false);
 
     const handleSave = () => {
-        /* Cast val to string to resolve 'Argument of type unknown is not assignable to parameter of type string' error at line 16 */
+        // FIX: Corrected template literal syntax and ensured 'val' is treated as a string.
         Object.entries(keys).forEach(([key, val]) => {
-            localStorage.setItem(`api_key_${key}`, val as string);
+            // FIX: Explicitly convert `val` to a string to satisfy localStorage.setItem's signature.
+            localStorage.setItem(`api_key_${key}`, String(val));
         });
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);

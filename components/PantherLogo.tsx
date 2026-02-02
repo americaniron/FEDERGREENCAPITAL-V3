@@ -1,10 +1,12 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { brandingService } from '../services/brandingService';
 
 interface PantherLogoProps {
     className?: string;
 }
 
-export const PantherLogo: React.FC<PantherLogoProps> = ({ className }) => {
+const OriginalSVG: React.FC<PantherLogoProps> = ({ className }) => {
     return (
         <svg 
             viewBox="0 0 600 240" 
@@ -66,4 +68,38 @@ export const PantherLogo: React.FC<PantherLogoProps> = ({ className }) => {
             </g>
         </svg>
     );
+};
+
+export const PantherLogo: React.FC<PantherLogoProps> = ({ className }) => {
+    const [customLogo, setCustomLogo] = useState<string | null>(null);
+
+    useEffect(() => {
+        setCustomLogo(brandingService.getCustomLogo());
+    
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'fc_custom_logo') {
+                setCustomLogo(brandingService.getCustomLogo());
+            }
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
+    if (customLogo) {
+        // Remove styling classes that only apply to the SVG (like invert)
+        const imgClassName = className?.replace(/filter|brightness-0|invert|opacity-\d+/g, '').trim();
+        return (
+            <img 
+                src={customLogo} 
+                alt="Federgreen Capital Logo" 
+                className={imgClassName} 
+            />
+        );
+    }
+
+    return <OriginalSVG className={className} />;
 };
