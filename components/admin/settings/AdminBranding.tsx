@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Image as ImageIcon, Trash2 } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Image as ImageIcon, Trash2, UploadCloud } from 'lucide-react';
 import { SiteSettings } from '../../../config/settingsModel';
 import { DEFAULT_SITE_SETTINGS } from '../../../config/defaultSettings';
 import { brandingService } from '../../../services/brandingService';
@@ -16,6 +16,25 @@ const AdminBranding: React.FC<AdminBrandingProps> = ({ settings, onUpdate }) => 
     React.useEffect(() => {
         setCustomLogo(brandingService.getCustomLogo());
     }, []);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleLogoUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result as string;
+            brandingService.setCustomLogo(base64String);
+            window.location.reload(); // Reload to apply the logo everywhere
+        };
+        reader.readAsDataURL(file);
+    };
 
     const handleClearLogo = () => {
         brandingService.clearCustomLogo();
@@ -34,20 +53,38 @@ const AdminBranding: React.FC<AdminBrandingProps> = ({ settings, onUpdate }) => 
             <h2 className="text-xl font-bold text-slate-100 mb-6">Site Branding</h2>
             <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
                 <h3 className="font-bold text-slate-100 mb-4">Custom Logo</h3>
-                {customLogo ? (
-                    <div className="flex items-center gap-6">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/*"
+                />
+                <div className="flex items-center gap-6">
+                    {customLogo ? (
                         <img src={customLogo} alt="Custom Logo" className="h-16 w-auto bg-slate-900 p-2 rounded-lg" />
-                        <div className="flex-1">
-                            <p className="text-sm text-slate-300">A custom logo is currently active.</p>
-                            <p className="text-xs text-slate-500">To upload a new one, use the "Upload Logo" button on the homepage while in Admin Preview mode.</p>
+                    ) : (
+                        <div className="h-16 w-32 bg-slate-900/50 border border-dashed border-slate-600 rounded-lg flex items-center justify-center">
+                            <ImageIcon className="text-slate-600" />
                         </div>
-                        <button onClick={handleClearLogo} className="flex items-center gap-2 px-4 py-3 bg-red-900/30 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-900/50">
-                            <Trash2 size={14} /> Clear Logo
-                        </button>
+                    )}
+                    <div className="flex-1">
+                        <p className="text-sm text-slate-300">
+                            {customLogo ? 'A custom logo is currently active.' : 'No custom logo uploaded. The default site logo is being used.'}
+                        </p>
+                        <p className="text-xs text-slate-500">Upload a PNG, JPG, or SVG file. The site will reload upon change.</p>
                     </div>
-                ) : (
-                    <p className="text-sm text-slate-400">No custom logo uploaded. The default site logo is being used.</p>
-                )}
+                    <div className="flex items-center gap-3">
+                        <button onClick={handleLogoUploadClick} className="flex items-center gap-2 px-4 py-3 bg-brand-gold text-brand-950 rounded-lg text-xs font-semibold hover:bg-white transition-colors">
+                            <UploadCloud size={14} /> Upload New
+                        </button>
+                        {customLogo && (
+                            <button onClick={handleClearLogo} className="flex items-center gap-2 px-4 py-3 bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold hover:bg-red-900/50 hover:text-red-400 transition-colors">
+                                <Trash2 size={14} /> Clear
+                            </button>
+                        )}
+                    </div>
+                </div>
             </div>
             
             <h2 className="text-xl font-bold text-slate-100 mt-12 mb-6">Page Hero Images</h2>

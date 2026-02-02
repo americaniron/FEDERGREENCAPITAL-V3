@@ -136,7 +136,7 @@ const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, on
                                     
                                     {item.subItems && (
                                         <div 
-                                            className={`absolute left-0 top-full mt-4 w-[600px] xl:w-[800px] glass shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)] rounded-[2.5rem] overflow-hidden transition-all duration-500 origin-top transform border border-brand-gold/20 ${
+                                            className={`absolute left-0 top-full mt-4 w-[600px] xl:w-[800px] bg-brand-950/95 backdrop-blur-2xl shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)] rounded-[2.5rem] overflow-hidden transition-all duration-500 origin-top transform border border-brand-gold/20 ${
                                                 activeMega === item.label ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-4 invisible'
                                             }`}
                                         >

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import GeminiAssistant from './components/GeminiAssistant';
@@ -20,7 +20,7 @@ import { adminAuthService } from './services/adminAuthService';
 import { authService } from './services/authService'; // Import site user auth service
 import { brandingService } from './services/brandingService';
 import { DEFAULT_PAGE } from './constants';
-import { ArrowDown, Zap, ChevronRight, Play, Pause, Terminal, ArrowRight, UploadCloud } from 'lucide-react';
+import { ArrowDown, Zap, ChevronRight, Play, Pause, Terminal, ArrowRight } from 'lucide-react';
 import { ScenarioManager } from './lib/scenario-manager';
 import { PageSection, PageContent, FinancialScenario, SiteUser } from './types';
 import { SiteSettings } from './config/settingsModel';
@@ -113,25 +113,6 @@ const App: React.FC = () => {
   const [settings, setSettings] = useState<SiteSettings>(() => 
     isAdminUser ? settingsService.getDraftSettings() : settingsService.getPublishedSettings()
   );
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleLogoUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-        const base64String = reader.result as string;
-        brandingService.setCustomLogo(base64String);
-        window.location.reload(); // Reload to apply the logo everywhere
-    };
-    reader.readAsDataURL(file);
-  };
 
   const handleSettingsPublish = () => {
       setSettings(settingsService.getDraftSettings());
@@ -287,24 +268,6 @@ const App: React.FC = () => {
                                     >
                                         Our Services
                                     </button>
-                                    {isAdminUser && (
-                                        <>
-                                            <input
-                                                type="file"
-                                                ref={fileInputRef}
-                                                onChange={handleFileChange}
-                                                className="hidden"
-                                                accept="image/*"
-                                            />
-                                            <button 
-                                                onClick={handleLogoUploadClick}
-                                                className="group relative px-8 sm:px-12 py-4 sm:py-6 bg-brand-900 border-2 border-dashed border-brand-gold/50 text-brand-gold font-heading font-black rounded-xl sm:rounded-2xl flex items-center justify-center gap-4 transition-all hover:border-brand-gold text-[10px] sm:text-[11px] uppercase tracking-[0.4em] overflow-hidden"
-                                            >
-                                                <UploadCloud size={18} className="relative z-10 group-hover:-translate-y-1 transition-transform" />
-                                                <span className="relative z-10">Upload Logo</span>
-                                            </button>
-                                        </>
-                                    )}
                                 </div>
                             )}
                         </div>
