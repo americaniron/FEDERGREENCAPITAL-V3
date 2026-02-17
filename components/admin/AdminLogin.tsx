@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { adminAuthService } from '../../services/adminAuthService';
 import { PantherLogo } from '../PantherLogo';
-import { ArrowRight, ShieldAlert, Loader2 } from 'lucide-react';
+import { ExternalLink, ShieldAlert, Loader2 } from 'lucide-react';
 
 interface AdminLoginProps {
     onLoginSuccess: () => void;
@@ -80,6 +80,16 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
                         </button>
                     </div>
                 </form>
+
+                <div className="text-center pt-8 border-t border-slate-700/50">
+                    <button
+                        onClick={() => window.location.hash = '/'}
+                        className="text-sm font-semibold text-slate-400 hover:text-brand-gold transition-colors flex items-center gap-2 mx-auto"
+                    >
+                        <ExternalLink size={16} />
+                        Return to Main Site
+                    </button>
+                </div>
             </div>
         </div>
     );

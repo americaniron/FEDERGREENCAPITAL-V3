@@ -16,7 +16,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
                 '700': '#233554',
                 '800': '#172A45',
                 '900': '#112240',
-                '950': '#0A192F', // Dark Navy
+                '950': '#081424', // Darker Navy
                 'gold': '#2E8B57', // Medium Dark Green
                 'gold_light': '#3CB371',
                 'terminal': '#64FFDA',
