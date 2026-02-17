@@ -1,6 +1,14 @@
 
-
 import { GoogleGenAI, Modality, GenerateContentParameters } from "@google/genai";
+
+/*
+ * FEDERGREEN AI CORE: INSTITUTIONAL MODEL CONFIGURATION
+ * ------------------------------------------------------
+ * All reasoning and analysis tasks leverage 'gemini-3-pro-preview', the premier model for complex,
+ * institutional-grade financial and strategic synthesis.
+ * Speech generation utilizes the specialized 'gemini-2.5-flash-preview-tts' for high-fidelity audio.
+ * 'thinkingBudget' is maximized for critical audit and drafting tasks to ensure sovereign-level depth.
+ */
 
 // Create a single, memoized instance of the AI client.
 const ai = (() => {
@@ -35,10 +43,12 @@ export const chatWithGemini = async (message: string, history: { role: string; t
 
   try {
       const response = await ai.models.generateContent({
-          model: 'gemini-3-pro-preview',
+          model: 'gemini-3-pro-preview', // State-of-the-art for conversational AI
           contents: contents,
           config: {
               tools: [{ googleSearch: {} }],
+              // Moderate thinking budget for responsive yet deep conversational analysis.
+              thinkingConfig: { thinkingBudget: 8192 },
               systemInstruction: `You are the Federgreen Capital Digital Command Hub (Concierge). 
               Your interface is a high-fidelity, sovereign-level strategic terminal. 
               You are professional, precise, and use institutional-grade terminology. 
@@ -82,10 +92,11 @@ Provide deep, institutional-grade reasoning within each section. Use professiona
     
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3-pro-preview', // Premier model for strategic audit
             contents: prompt,
             config: {
-                thinkingConfig: { thinkingBudget: 4000 },
+                // Maximize thinking budget for deepest possible institutional-grade analysis.
+                thinkingConfig: { thinkingBudget: 32768 },
             }
         });
         return response.text || "DIAGNOSTIC_FAILURE";
@@ -119,11 +130,12 @@ export const analyzePortfolioRisk = async (scenarioData: any) => {
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3-pro-preview', // Premier model for risk assessment
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
-                thinkingConfig: { thinkingBudget: 2000 }
+                // Maximize thinking budget for comprehensive, high-fidelity risk modeling.
+                thinkingConfig: { thinkingBudget: 32768 }
             }
         });
         return JSON.parse(response.text || "{}");
@@ -137,7 +149,7 @@ export const generateSpeech = async (text: string): Promise<string | null> => {
     if (!ai) return null;
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash-preview-tts",
+            model: "gemini-2.5-flash-preview-tts", // State-of-the-art model for text-to-speech.
             contents: [{ parts: [{ text }] }],
             config: {
                 // FIX: responseModalities must be an array containing Modality.AUDIO
@@ -164,9 +176,12 @@ export const generatePlanDraft = async (stepTitle: string, inputs: any) => {
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3-pro-preview', // Premier model for complex document generation.
             contents: prompt,
-            config: { thinkingConfig: { thinkingBudget: 2000 } }
+            config: { 
+                // Maximize thinking budget for thorough, well-structured business plan drafting.
+                thinkingConfig: { thinkingBudget: 32768 } 
+            }
         });
         return response.text || "DRAFTING_TIMEOUT";
     } catch (error) {
@@ -180,9 +195,13 @@ export const suggestBusinessRisks = async (companyDescription: string) => {
     const prompt = `Perform risk audit for: ${companyDescription}. Return JSON: [{ "name": "...", "prob": 0-100, "impact": 0-100, "mitigation": "..." }]`;
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3-pro-preview', // Premier model for structured data extraction.
             contents: prompt,
-            config: { responseMimeType: "application/json" }
+            config: { 
+                responseMimeType: "application/json",
+                // High thinking budget for nuanced risk identification and mitigation strategy.
+                thinkingConfig: { thinkingBudget: 16384 }
+            }
         });
         return response.text || "[]";
     } catch (error) {
@@ -195,9 +214,13 @@ export const analyzeBusinessModel = async (biz: string, loc: string, type: strin
     const prompt = `Execute sovereign-level Market Intelligence scan for a ${biz} in ${loc}. Perform ${type} analysis. Return structured JSON matching the requested module schema.`;
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3-pro-preview', // Premier model for market intelligence.
             contents: prompt,
-            config: { responseMimeType: "application/json" }
+            config: { 
+                responseMimeType: "application/json",
+                // Maximize thinking budget for deep market analysis and competitive intelligence.
+                thinkingConfig: { thinkingBudget: 32768 }
+            }
         });
         return response.text || null;
     } catch (error) {

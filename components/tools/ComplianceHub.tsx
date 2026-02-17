@@ -243,7 +243,7 @@ const ComplianceHub: React.FC = () => {
         if (!activeProfile) return null;
         const band = getRiskBand(activeProfile.riskScore || 0);
         return (
-            <div className="bg-white text-black p-12 space-y-12 font-sans min-h-[11in] animate-fade-in relative overflow-hidden print-report">
+            <div className="bg-brand-pearl text-brand-950 p-12 space-y-12 font-sans min-h-[11in] animate-fade-in relative overflow-hidden print-report">
                 {/* Standardize the page & margins for professional report output */}
                 <style>{`
                     @media print {
@@ -274,11 +274,11 @@ const ComplianceHub: React.FC = () => {
                 
                 <div className="flex justify-between items-start border-b-4 border-black pb-8">
                     <div>
-                        <h1 className="text-4xl font-heading font-black uppercase tracking-tighter">FEDERGREEN CAPITAL</h1>
+                        <h1 className="text-4xl font-heading font-black uppercase tracking-tighter text-brand-950">FEDERGREEN CAPITAL</h1>
                         <p className="text-[10px] font-bold uppercase tracking-[0.4em] mt-2 text-slate-500">Institutional Compliance Node // Internal Audit Report</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-sm font-bold uppercase">Classification: Restricted</p>
+                        <p className="text-sm font-bold uppercase text-brand-900">Classification: Restricted</p>
                         <p className="text-[10px] font-mono mt-1 text-slate-400 uppercase tracking-widest">DOC_ID: {activeProfile.id?.substring(0,8)}_KYC_AUDIT</p>
                         <p className="text-[10px] font-mono text-slate-400 mt-1 uppercase tracking-widest">DATE: {new Date().toLocaleDateString()}</p>
                     </div>
@@ -287,7 +287,7 @@ const ComplianceHub: React.FC = () => {
                 <div className="grid grid-cols-3 gap-8">
                     <div className="col-span-2 space-y-8">
                         <div>
-                            <h2 className="text-xs font-heading font-black uppercase tracking-[0.3em] mb-4 border-b border-slate-200 pb-2">Subject Identification</h2>
+                            <h2 className="text-xs font-heading font-black uppercase tracking-[0.3em] mb-4 border-b border-slate-300 pb-2 text-brand-900">Subject Identification</h2>
                             <table>
                                 <colgroup>
                                     <col className="col-label" />
@@ -303,7 +303,7 @@ const ComplianceHub: React.FC = () => {
                         </div>
 
                         <div>
-                            <h2 className="text-xs font-heading font-black uppercase tracking-[0.3em] mb-4 border-b border-slate-200 pb-2">Institutional Checklist Results</h2>
+                            <h2 className="text-xs font-heading font-black uppercase tracking-[0.3em] mb-4 border-b border-slate-300 pb-2 text-brand-900">Institutional Checklist Results</h2>
                             <table>
                                 <colgroup>
                                     <col className="col-label" />
@@ -324,39 +324,39 @@ const ComplianceHub: React.FC = () => {
                     </div>
 
                     <div className="space-y-6">
-                        <div className="p-8 border-2 border-black rounded-lg text-center bg-slate-50">
-                            <p className="text-[10px] font-heading font-black uppercase tracking-widest mb-4">Risk Categorization</p>
-                            <div className="text-7xl font-heading font-black leading-none">{activeProfile.riskScore}</div>
+                        <div className="p-8 border-2 border-brand-950 rounded-lg text-center bg-slate-100">
+                            <p className="text-[10px] font-heading font-black uppercase tracking-widest mb-4 text-brand-900">Risk Categorization</p>
+                            <div className="text-7xl font-heading font-black leading-none text-brand-950">{activeProfile.riskScore}</div>
                             <div className={`mt-4 py-2 px-4 rounded text-[10px] font-heading font-black uppercase tracking-[0.3em] ${band.class.replace('text-white', 'text-black')}`}>
                                 {band.label}
                             </div>
                         </div>
                         
-                        <div className="p-6 border border-slate-200 rounded-lg space-y-4">
-                            <p className="text-[9px] font-heading font-black uppercase tracking-widest border-b pb-2">Audit Status</p>
+                        <div className="p-6 border border-slate-300 rounded-lg space-y-4">
+                            <p className="text-[9px] font-heading font-black uppercase tracking-widest border-b pb-2 text-brand-900">Audit Status</p>
                             <div className="flex items-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-black"></div>
-                                <span className="text-[9px] font-bold uppercase">Identity Verified</span>
+                                <span className="text-[9px] font-bold uppercase text-brand-900">Identity Verified</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-black"></div>
-                                <span className="text-[9px] font-bold uppercase">Sanctions Clean</span>
+                                <span className="text-[9px] font-bold uppercase text-brand-900">Sanctions Clean</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-slate-300"></div>
+                                <div className="w-2 h-2 rounded-full bg-slate-400"></div>
                                 <span className="text-[9px] font-bold uppercase text-slate-400">Manual Review Pending</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-12 border-t border-slate-200 mt-12">
+                <div className="pt-12 border-t border-slate-300 mt-12">
                     <p className="text-[8px] uppercase font-bold text-slate-400 leading-relaxed italic text-center max-w-2xl mx-auto">
                         {COMPLIANCE_DISCLAIMER}
                     </p>
                     <div className="mt-12 flex justify-between items-end no-print">
                          <button onClick={() => setView('registry')} className="text-[10px] font-heading font-black uppercase tracking-widest border-b-2 border-black pb-1 hover:text-slate-500 transition-colors">Terminate Report View</button>
-                         <button onClick={handlePrint} className="bg-black text-white px-8 py-3 rounded text-[10px] font-heading font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2">
+                         <button onClick={handlePrint} className="bg-brand-950 text-white px-8 py-3 rounded text-[10px] font-heading font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-2">
                              <Printer size={14} /> Execute Paper Copy
                          </button>
                     </div>

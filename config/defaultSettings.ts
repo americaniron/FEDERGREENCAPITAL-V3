@@ -20,6 +20,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
                 'gold': '#d4af37',
                 'gold_light': '#f3d267',
                 'terminal': '#00ff41',
+                'pearl': '#fcfdfd',
             }
         }
     },

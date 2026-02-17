@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Calculator, FileText, ArrowRight, X } from 'lucide-react';
 import { NAVIGATION } from '../constants';
@@ -52,7 +53,7 @@ const SearchCommand: React.FC<SearchCommandProps> = ({ isOpen, onClose, onNaviga
         <div className="fixed inset-0 z-[100] flex items-start justify-center pt-24 px-4">
             <div className="absolute inset-0 bg-brand-950/80 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
             
-            <div className="relative w-full max-w-2xl bg-white dark:bg-brand-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-brand-700 animate-fade-in transform transition-all">
+            <div className="relative w-full max-w-2xl bg-brand-pearl dark:bg-brand-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-brand-700 animate-fade-in transform transition-all">
                 <div className="flex items-center px-4 py-4 border-b border-slate-200 dark:border-brand-800">
                     <Search className="text-slate-400 w-6 h-6 mr-3" />
                     <input 
@@ -81,7 +82,7 @@ const SearchCommand: React.FC<SearchCommandProps> = ({ isOpen, onClose, onNaviga
                                         onNavigate(item.path);
                                         onClose();
                                     }}
-                                    className="w-full flex items-center p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-brand-800 transition-colors group text-left"
+                                    className="w-full flex items-center p-3 rounded-lg hover:bg-slate-200 dark:hover:bg-brand-800 transition-colors group text-left"
                                 >
                                     <div className={`p-2 rounded-lg mr-4 ${item.type === 'Tool' ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
                                         {item.type === 'Tool' ? <Calculator size={18} /> : <FileText size={18} />}
@@ -101,7 +102,7 @@ const SearchCommand: React.FC<SearchCommandProps> = ({ isOpen, onClose, onNaviga
                     )}
                 </div>
                 
-                <div className="bg-slate-50 dark:bg-brand-950 px-4 py-2 text-xs text-slate-400 flex justify-between items-center border-t border-slate-200 dark:border-brand-800">
+                <div className="bg-slate-100 dark:bg-brand-950 px-4 py-2 text-xs text-slate-400 flex justify-between items-center border-t border-slate-200 dark:border-brand-800">
                     <span><strong>Pro Tip:</strong> Search for "ROI" to find calculators.</span>
                     <span>ESC to close</span>
                 </div>
