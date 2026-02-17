@@ -138,10 +138,7 @@
       .flash-card {
         background-color: transparent;
         perspective: 1000px;
-        transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-      }
-      .flash-card:hover {
-        transform: translateY(-10px); /* Add a lift effect on hover */
+        transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
       }
       .card-inner {
         position: relative;
@@ -165,32 +162,13 @@
         display: flex;
         flex-direction: column;
         transition: box-shadow 0.4s, border-color 0.4s;
-        position: relative; /* For shine pseudo-element */
-        overflow: hidden;   /* To contain the shine */
       }
       .flash-card:hover .card-front, .flash-card:hover .card-back {
-        box-shadow: 0 35px 60px -15px rgba(29, 17, 53, 0.3); /* Enhanced shadow */
+        box-shadow: 0 25px 50px -12px rgba(29, 17, 53, 0.25);
         border-color: var(--color-brand-400);
       }
       .card-back {
         transform: rotateY(180deg);
-      }
-      /* New Shine effect */
-      .card-front::before, .card-back::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -85%;
-          width: 60%;
-          height: 100%;
-          background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 100%);
-          transform: skewX(-25deg);
-          transition: left 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-          z-index: 1; /* Ensure shine is on top of content */
-      }
-      .flash-card:hover .card-front::before,
-      .flash-card:hover .card-back::before {
-          left: 125%;
       }
 
       .terminal-text {
