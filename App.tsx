@@ -284,7 +284,7 @@ const App: React.FC = () => {
                                     <p className="text-brand-gold font-heading font-black uppercase tracking-[0.3em] sm:tracking-[0.5em] text-[8px] sm:text-[11px] text-glow">{pageData.subtitle}</p>
                                 </div>
                             )}
-                            <h1 className={`font-heading font-black leading-[0.9] sm:leading-[0.95] mb-6 sm:mb-12 tracking-tighter text-white text-4xl sm:text-7xl md:text-8xl lg:text-[10rem] animate-fade-up uppercase`} style={{ animationDelay: '150ms' }}>
+                            <h1 className={`font-heading font-black leading-[0.9] sm:leading-[0.95] mb-6 sm:mb-12 tracking-tighter text-white text-4xl sm:text-6xl md:text-7xl lg:text-9xl animate-fade-up uppercase`} style={{ animationDelay: '150ms' }}>
                                <span className={`${isHome ? 'text-brand-gold' : ''} animate-reveal-text inline-block`}>{pageData.title.split(' ').slice(0, -1).join(' ')}</span><br/>
                                <span className="text-brand-gold animate-reveal-text inline-block" style={{ animationDelay: '300ms' }}>{pageData.title.split(' ').slice(-1).join(' ')}</span>
                             </h1>

@@ -120,18 +120,15 @@ const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, on
                                     onMouseEnter={() => item.subItems && setActiveMega(item.label)}
                                     onMouseLeave={() => setActiveMega(null)}
                                 >
-                                    <button 
-                                        className={`px-3 xl:px-4 py-2 rounded-xl font-extrabold text-[9px] xl:text-[10px] tracking-[0.2em] uppercase transition-all duration-300 relative group/btn ${
+                                    <button
+                                        className={`px-3 xl:px-4 py-2 rounded-xl font-extrabold text-[9px] xl:text-[10px] tracking-[0.2em] uppercase transition-all duration-300 relative group/btn border-t border-b border-transparent ${
                                             activeMega === item.label || (currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path)))
-                                                ? 'text-brand-950 bg-brand-gold shadow-[inset_0_-2px_4px_rgba(0,0,0,0.3)]' 
-                                                : 'text-brand-gold/70 hover:text-brand-950 hover:bg-brand-gold hover:shadow-[inset_0_-2px_4px_rgba(0,0,0,0.3)]'
+                                                ? 'bg-brand-800 text-brand-gold border-t-brand-700 border-b-brand-950' 
+                                                : 'text-brand-gold/70 hover:bg-brand-800 hover:text-brand-gold hover:border-t-brand-700 hover:border-b-brand-950'
                                         }`}
                                         onClick={() => !item.subItems && handleNav(item.path)}
                                     >
                                         <span className="relative z-10">{item.label}</span>
-                                        {(currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path))) && !activeMega && (
-                                            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-brand-950 rounded-full"></div>
-                                        )}
                                     </button>
                                     
                                     {item.subItems && (
