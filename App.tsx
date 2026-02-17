@@ -43,42 +43,41 @@ const PageSectionRenderer: React.FC<{ section: PageSection; onNavigate: (path: s
           {section.type === 'cards' && section.items && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                   {section.items.map((item, i) => (
-                      <div 
-                        key={i} 
-                        onClick={() => item.link && onNavigate(item.link)}
-                        className={`flash-card p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl group transition-all duration-700 animate-fade-up ${item.link ? 'cursor-pointer' : ''}`}
-                        style={{ animationDelay: `${500 + i * 150}ms`, perspective: '1000px' }}
-                        onMouseMove={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            const x = e.clientX - rect.left;
-                            const y = e.clientY - rect.top;
-                            e.currentTarget.style.setProperty('--spotlight-x', `${x}px`);
-                            e.currentTarget.style.setProperty('--spotlight-y', `${y}px`);
-                            
-                            const rotateX = (y / rect.height - 0.5) * -5;
-                            const rotateY = (x / rect.width - 0.5) * 5;
-                            if (window.innerWidth > 1024) {
-                                e.currentTarget.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = `rotateX(0deg) rotateY(0deg)`;
-                        }}
-                      >
-                          <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-0 group-hover:opacity-100 transition-all duration-500 scale-75 group-hover:scale-100 hidden sm:block">
-                              <Zap className="text-brand-gold/30" size={24} />
-                          </div>
-                          <h3 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-white mb-3 sm:mb-4 group-hover:text-brand-gold transition-colors tracking-tight leading-tight uppercase">
-                              {item.title}
-                          </h3>
-                          <p className="text-white/40 text-xs sm:text-sm md:text-base leading-relaxed mb-6 font-medium">
-                              {item.desc}
-                          </p>
-                          <div className={`pt-4 sm:pt-6 border-t border-white/5 flex items-center text-brand-gold text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500`}>
-                              {item.link ? 'Deploy Ecosystem' : 'Examine Logic'} 
-                              <ChevronRight size={14} className="ml-2 group-hover:translate-x-3 transition-transform" />
-                          </div>
-                      </div>
+                       <div 
+                            key={i} 
+                            className={`flash-card rounded-2xl sm:rounded-3xl group animate-fade-up min-h-[280px] md:min-h-[320px]`}
+                            style={{ animationDelay: `${500 + i * 150}ms` }}
+                        >
+                            <div className="card-inner">
+                                {/* Front of the Card */}
+                                <div className={`card-front p-6 sm:p-8 md:p-10 items-center justify-center text-center`}>
+                                    <Zap className="text-brand-500 mb-6 mx-auto" size={48} />
+                                    <h3 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-brand-950 transition-colors tracking-tight leading-tight uppercase">
+                                        {item.title}
+                                    </h3>
+                                    <p className="mt-4 text-[9px] font-mono text-brand-700 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity delay-300">Hover to Declassify</p>
+                                </div>
+                                
+                                {/* Back of the Card */}
+                                <div 
+                                    onClick={() => item.link && onNavigate(item.link)}
+                                    className={`card-back p-6 sm:p-8 md:p-10 justify-between ${item.link ? 'cursor-pointer' : ''}`}
+                                >
+                                    <div>
+                                        <h3 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-brand-700 mb-3 sm:mb-4 transition-colors tracking-tight leading-tight uppercase">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-brand-950/70 text-xs sm:text-sm md:text-base leading-relaxed font-medium">
+                                            {item.desc}
+                                        </p>
+                                    </div>
+                                    <div className={`pt-4 sm:pt-6 border-t border-brand-950/10 flex items-center text-brand-950 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500`}>
+                                        {item.link ? 'Deploy Ecosystem' : 'Examine Logic'} 
+                                        <ChevronRight size={14} className="ml-2" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                   ))}
               </div>
           )}
