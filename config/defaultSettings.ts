@@ -6,21 +6,21 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     theme: {
         colors: {
             brand: {
-                '50': '#f4eff7',
-                '100': '#e8dff0',
-                '200': '#d1bfe0',
-                '300': '#ba9ed1',
-                '400': '#a37ec1',
-                '500': '#8b5db2',
-                '600': '#744599',
-                '700': '#4B2C71',
-                '800': '#412562',
-                '900': '#362052',
-                '950': '#1d1135',
-                'gold': '#d4af37',
-                'gold_light': '#f3d267',
-                'terminal': '#00ff41',
-                'pearl': '#fcfdfd',
+                '50': '#F5FAFF',
+                '100': '#E6F1FF',
+                '200': '#CCD6F6',
+                '300': '#A8B2D1',
+                '400': '#8892B0',
+                '500': '#485A78',
+                '600': '#304566',
+                '700': '#233554',
+                '800': '#172A45',
+                '900': '#112240',
+                '950': '#0A192F', // Dark Navy
+                'gold': '#2E8B57', // Medium Dark Green
+                'gold_light': '#3CB371',
+                'terminal': '#64FFDA',
+                'pearl': '#1E3A3A', // Dark Green/Teal for card background
             }
         }
     },

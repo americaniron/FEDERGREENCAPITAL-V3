@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import GeminiAssistant from './components/GeminiAssistant';
@@ -27,7 +27,76 @@ import { SiteSettings } from './config/settingsModel';
 import AdminPreviewBar from './components/admin/AdminPreviewBar';
 
 const PageSectionRenderer: React.FC<{ section: PageSection; onNavigate: (path: string) => void }> = ({ section, onNavigate }) => {
-  return (
+
+    const InstitutionalCard: React.FC<{ item: any, onNavigate: (path: string) => void, animationDelay: string }> = ({ item, onNavigate, animationDelay }) => {
+        const cardRef = useRef<HTMLDivElement>(null);
+
+        const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+            if (!cardRef.current) return;
+            const card = cardRef.current;
+            const { width, height, left, top } = card.getBoundingClientRect();
+            const x = e.clientX - left;
+            const y = e.clientY - top;
+            
+            const mouseX = x - width / 2;
+            const mouseY = y - height / 2;
+            
+            const rotateY = (mouseX / (width / 2)) * 8;
+            const rotateX = -(mouseY / (height / 2)) * 8;
+
+            card.style.setProperty('--rotate-x', `${rotateX}deg`);
+            card.style.setProperty('--rotate-y', `${rotateY}deg`);
+            card.style.setProperty('--spotlight-x', `${(x / width) * 100}%`);
+            card.style.setProperty('--spotlight-y', `${(y / height) * 100}%`);
+        };
+
+        const handleMouseLeave = () => {
+            if (!cardRef.current) return;
+            cardRef.current.style.setProperty('--rotate-x', '0deg');
+            cardRef.current.style.setProperty('--rotate-y', '0deg');
+        };
+        
+        return (
+            <div 
+                ref={cardRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                className={`flash-card rounded-2xl sm:rounded-3xl group animate-fade-up min-h-[280px] md:min-h-[320px]`}
+                style={{ animationDelay }}
+            >
+                <div className="card-inner">
+                    <div className={`card-front p-6 sm:p-8 md:p-10`}>
+                        <div className="card-content flex flex-col items-center justify-center text-center h-full">
+                            <Zap className="text-brand-gold mb-6 mx-auto" size={48} />
+                            <h3 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-white transition-colors tracking-tight leading-tight uppercase">
+                                {item.title}
+                            </h3>
+                            <p className="mt-4 text-[9px] font-mono text-white/60 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity delay-300">Hover to Declassify</p>
+                        </div>
+                    </div>
+                    <div 
+                        onClick={() => item.link && onNavigate(item.link)}
+                        className={`card-back p-6 sm:p-8 md:p-10 justify-between flex flex-col ${item.link ? 'cursor-pointer' : ''}`}
+                    >
+                        <div className="card-content">
+                            <h3 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-brand-gold mb-3 sm:mb-4 transition-colors tracking-tight leading-tight uppercase">
+                                {item.title}
+                            </h3>
+                            <p className="text-white/80 text-xs sm:text-sm md:text-base leading-relaxed font-medium">
+                                {item.desc}
+                            </p>
+                        </div>
+                        <div className={`card-content pt-4 sm:pt-6 border-t border-white/10 flex items-center text-white text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500`}>
+                            {item.link ? 'Deploy Ecosystem' : 'Examine Logic'} 
+                            <ChevronRight size={14} className="ml-2" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
       <div className="py-12 sm:py-16 md:py-24 border-b border-brand-800/30 last:border-0 relative px-0">
           <div className="mb-10 sm:mb-16 md:mb-20 text-left max-w-[1400px]">
               <span className="text-[9px] sm:text-[11px] font-black text-brand-gold uppercase tracking-[0.5em] mb-4 block animate-fade-up" style={{ animationDelay: '100ms' }}>Strategic Node</span>
@@ -43,41 +112,12 @@ const PageSectionRenderer: React.FC<{ section: PageSection; onNavigate: (path: s
           {section.type === 'cards' && section.items && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
                   {section.items.map((item, i) => (
-                       <div 
-                            key={i} 
-                            className={`flash-card rounded-2xl sm:rounded-3xl group animate-fade-up min-h-[280px] md:min-h-[320px]`}
-                            style={{ animationDelay: `${500 + i * 150}ms` }}
-                        >
-                            <div className="card-inner">
-                                {/* Front of the Card */}
-                                <div className={`card-front p-6 sm:p-8 md:p-10 items-center justify-center text-center`}>
-                                    <Zap className="text-brand-500 mb-6 mx-auto" size={48} />
-                                    <h3 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-brand-950 transition-colors tracking-tight leading-tight uppercase">
-                                        {item.title}
-                                    </h3>
-                                    <p className="mt-4 text-[9px] font-mono text-brand-700 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity delay-300">Hover to Declassify</p>
-                                </div>
-                                
-                                {/* Back of the Card */}
-                                <div 
-                                    onClick={() => item.link && onNavigate(item.link)}
-                                    className={`card-back p-6 sm:p-8 md:p-10 justify-between ${item.link ? 'cursor-pointer' : ''}`}
-                                >
-                                    <div>
-                                        <h3 className="text-lg sm:text-xl md:text-2xl font-heading font-black text-brand-700 mb-3 sm:mb-4 transition-colors tracking-tight leading-tight uppercase">
-                                            {item.title}
-                                        </h3>
-                                        <p className="text-brand-950/70 text-xs sm:text-sm md:text-base leading-relaxed font-medium">
-                                            {item.desc}
-                                        </p>
-                                    </div>
-                                    <div className={`pt-4 sm:pt-6 border-t border-brand-950/10 flex items-center text-brand-950 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] transition-all duration-500`}>
-                                        {item.link ? 'Deploy Ecosystem' : 'Examine Logic'} 
-                                        <ChevronRight size={14} className="ml-2" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                      <InstitutionalCard 
+                          key={i} 
+                          item={item} 
+                          onNavigate={onNavigate} 
+                          animationDelay={`${500 + i * 150}ms`} 
+                      />
                   ))}
               </div>
           )}
@@ -193,7 +233,7 @@ const App: React.FC = () => {
             <UserSwitcher onUserChange={setCurrentSiteUser} onNavigate={navigate} />
 
             <div 
-                className="fixed top-0 left-0 h-1 bg-brand-gold z-[110] transition-all duration-150 ease-out shadow-[0_0_20px_rgba(212,175,55,0.6)]"
+                className="fixed top-0 left-0 h-1 bg-brand-gold z-[110] transition-all duration-150 ease-out shadow-[0_0_20px_rgba(46,139,87,0.6)]"
                 style={{ width: `${scrollProgress * 100}%` }}
             ></div>
 
@@ -256,7 +296,7 @@ const App: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 animate-fade-up" style={{ animationDelay: '600ms' }}>
                                     <button 
                                         onClick={() => navigate('/portal')} 
-                                        className="group relative px-8 sm:px-12 py-4 sm:py-6 bg-brand-gold text-brand-950 font-heading font-black rounded-xl sm:rounded-2xl flex items-center justify-center gap-4 transition-all hover:bg-white shadow-[0_20px_50px_rgba(212,175,55,0.5)] text-[10px] sm:text-[11px] uppercase tracking-[0.4em] overflow-hidden"
+                                        className="group relative px-8 sm:px-12 py-4 sm:py-6 bg-brand-gold text-brand-950 font-heading font-black rounded-xl sm:rounded-2xl flex items-center justify-center gap-4 transition-all hover:bg-white shadow-[0_20px_50px_rgba(46,139,87,0.5)] text-[10px] sm:text-[11px] uppercase tracking-[0.4em] overflow-hidden"
                                     >
                                         <span className="relative z-10">Access Terminal</span>
                                         <ArrowRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />
