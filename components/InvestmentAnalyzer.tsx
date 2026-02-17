@@ -199,7 +199,7 @@ const InvestmentAnalyzer: React.FC<InvestmentAnalyzerProps> = ({ toolId }) => {
                      <button
                         onClick={handleAnalyze}
                         disabled={loading || !thesis}
-                        className="group/btn relative w-full px-12 py-7 bg-brand-gold text-brand-950 font-heading font-black rounded-full transition-all hover:bg-white disabled:opacity-50 overflow-hidden shadow-[0_20px_50px_-10px_rgba(212,175,55,0.4)] hover:shadow-brand-gold/20 active:scale-95 flex items-center justify-center gap-6"
+                        className="group/btn relative w-full px-12 py-7 bg-brand-gold text-brand-950 font-heading font-black rounded-full transition-all hover:bg-white disabled:opacity-50 overflow-hidden shadow-[0_20px_50px_-10px_rgba(0,200,83,0.4)] hover:shadow-brand-gold/20 active:scale-95 flex items-center justify-center gap-6"
                     >
                         <span className="relative z-10 text-xs uppercase tracking-[0.4em]">{loading ? 'AUDIT IN PROGRESS...' : 'EXECUTE AUDIT'}</span>
                         {loading ? <Loader2 size={22} className="animate-spin relative z-10" /> : <Zap size={22} className="relative z-10 group-hover/btn:rotate-6 transition-transform" />}
@@ -215,7 +215,7 @@ const InvestmentAnalyzer: React.FC<InvestmentAnalyzerProps> = ({ toolId }) => {
                                     <div className="flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-brand-gold animate-ping"></div>{LOG_PHRASES[currentLog]}</div>
                                     <span>{progress.toFixed(0)}%</span>
                                 </div>
-                                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/10 p-0.5"><div className="h-full bg-brand-gold shadow-[0_0_20px_#d4af37] rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div></div>
+                                <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden border border-white/10 p-0.5"><div className="h-full bg-brand-gold shadow-[0_0_20px_currentColor] text-brand-gold rounded-full transition-all duration-300" style={{ width: `${progress}%` }}></div></div>
                             </div>
                         </div>
                     )}

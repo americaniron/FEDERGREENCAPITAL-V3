@@ -17,8 +17,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
                 '800': '#172A45',
                 '900': '#112240',
                 '950': '#081424', // Darker Navy
-                'gold': '#2E8B57', // Medium Dark Green
-                'gold_light': '#3CB371',
+                'gold': '#00C853', // Brighter Green
+                'gold_light': '#69F0AE',
                 'terminal': '#64FFDA',
                 'pearl': '#1E3A3A', // Dark Green/Teal for card background
             }

@@ -90,7 +90,7 @@ const GeminiAssistant: React.FC = () => {
                             <div className="flex flex-col">
                                 <h3 className="text-white font-heading font-black text-[10px] md:text-[12px] tracking-[0.2em] md:tracking-[0.3em] uppercase">Command Hub</h3>
                                 <div className="flex items-center gap-2 md:gap-3 mt-1">
-                                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-brand-terminal animate-pulse shadow-[0_0_8px_#00ff41]"></div>
+                                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-brand-terminal animate-pulse shadow-[0_0_8px_currentColor] text-brand-terminal"></div>
                                     <span className="text-[8px] md:text-[10px] font-mono text-brand-terminal font-black uppercase tracking-widest">Live Secure</span>
                                 </div>
                             </div>
@@ -106,7 +106,7 @@ const GeminiAssistant: React.FC = () => {
                             <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 <div className={`max-w-[95%] md:max-w-[92%] rounded-[1.8rem] md:rounded-[2.5rem] px-6 py-5 md:px-10 md:py-8 text-sm leading-relaxed relative shadow-2xl ${
                                     msg.role === 'user' 
-                                        ? 'bg-brand-gold text-brand-950 font-black rounded-tr-none border border-brand-gold/50 shadow-[0_20px_50px_-10px_rgba(212,175,55,0.4)]' 
+                                        ? 'bg-brand-gold text-brand-950 font-black rounded-tr-none border border-brand-gold/50 shadow-[0_20px_50px_-10px_rgba(0,200,83,0.4)]' 
                                         : 'bg-white/5 text-white/90 border border-brand-gold/20 rounded-tl-none backdrop-blur-xl'
                                 }`}>
                                     {msg.role === 'model' && (

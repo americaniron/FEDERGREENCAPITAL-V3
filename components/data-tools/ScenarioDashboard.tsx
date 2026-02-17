@@ -114,7 +114,7 @@ const ScenarioDashboard: React.FC<ScenarioDashboardProps> = ({ scenario }) => {
                     <button 
                         onClick={handleExecuteAiAudit}
                         disabled={loadingAi}
-                        className="group flex-1 md:flex-none flex items-center justify-center gap-5 bg-brand-gold text-brand-950 font-heading font-black px-10 md:px-12 py-5 rounded-2xl md:rounded-[2.5rem] transition-all shadow-[0_20px_60px_rgba(212,175,55,0.4)] hover:bg-white active:scale-95 disabled:opacity-50"
+                        className="group flex-1 md:flex-none flex items-center justify-center gap-5 bg-brand-gold text-brand-950 font-heading font-black px-10 md:px-12 py-5 rounded-2xl md:rounded-[2.5rem] transition-all shadow-[0_20px_60px_rgba(0,200,83,0.4)] hover:bg-white active:scale-95 disabled:opacity-50"
                     >
                         {loadingAi ? <Loader2 className="animate-spin" size={24}/> : <BrainCircuit size={24} />}
                         <span className="text-xs uppercase tracking-[0.4em]">Initialize AI Audit</span>
@@ -130,7 +130,7 @@ const ScenarioDashboard: React.FC<ScenarioDashboardProps> = ({ scenario }) => {
                     <div className="space-y-4">
                         <p className="text-brand-gold font-mono text-xs md:text-sm font-black uppercase tracking-[0.5em]">Synchronizing Strategic Reasoning Core...</p>
                         <div className="w-48 md:w-64 h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/10 mx-auto">
-                            <div className="h-full bg-brand-gold animate-shimmer shadow-[0_0_20px_#d4af37]"></div>
+                            <div className="h-full bg-brand-gold animate-shimmer shadow-[0_0_20px_currentColor] text-brand-gold"></div>
                         </div>
                     </div>
                 </div>
@@ -175,7 +175,7 @@ const ScenarioDashboard: React.FC<ScenarioDashboardProps> = ({ scenario }) => {
                                          <span className="text-xl font-black text-white/10 mb-2">/ 10</span>
                                      </div>
                                      <div className="w-full h-2 bg-white/5 rounded-full mt-6 overflow-hidden border border-white/5 p-0.5">
-                                         <div className="h-full bg-brand-gold shadow-[0_0_15px_#d4af37]" style={{ width: `${aiRiskResult.moatRating * 10}%` }}></div>
+                                         <div className="h-full bg-brand-gold shadow-[0_0_15px_currentColor] text-brand-gold" style={{ width: `${aiRiskResult.moatRating * 10}%` }}></div>
                                      </div>
                                 </div>
                             </div>
@@ -230,7 +230,7 @@ const ScenarioDashboard: React.FC<ScenarioDashboardProps> = ({ scenario }) => {
                             <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-2">Sensitivity analysis across multi-variant market conditions.</p>
                         </div>
                         <div className="flex gap-6 text-[9px] font-black uppercase tracking-[0.3em] text-white/40">
-                            <div className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded bg-brand-gold shadow-[0_0_10px_#d4af37]"></span> Income</div>
+                            <div className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded bg-brand-gold shadow-[0_0_10px_currentColor] text-brand-gold"></span> Income</div>
                             <div className="flex items-center gap-2.5"><span className="w-2.5 h-2.5 rounded bg-slate-700"></span> Expenses</div>
                         </div>
                     </div>

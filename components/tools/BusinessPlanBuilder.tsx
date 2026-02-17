@@ -260,7 +260,7 @@ const BusinessPlanBuilder: React.FC<BusinessPlanBuilderProps> = ({ scenario }) =
 
         return (
             <div className="space-y-6 md:space-y-8 animate-fade-in">
-                <button onClick={handleGenRisks} className="w-full py-5 md:py-7 bg-brand-gold text-brand-950 font-black rounded-2xl md:rounded-[2rem] flex items-center justify-center gap-4 md:gap-6 hover:bg-white transition-all shadow-[0_20px_50px_rgba(212,175,55,0.3)] text-[10px] md:text-xs uppercase tracking-[0.4em]">
+                <button onClick={handleGenRisks} className="w-full py-5 md:py-7 bg-brand-gold text-brand-950 font-black rounded-2xl md:rounded-[2rem] flex items-center justify-center gap-4 md:gap-6 hover:bg-white transition-all shadow-[0_20px_50px_rgba(0,200,83,0.3)] text-[10px] md:text-xs uppercase tracking-[0.4em]">
                     <Shield size={20} /> BUILD RISK MATRIX
                 </button>
                 <div className="space-y-4 md:space-y-5">
@@ -329,13 +329,13 @@ const BusinessPlanBuilder: React.FC<BusinessPlanBuilderProps> = ({ scenario }) =
                                 onClick={() => handleStepChange(idx)}
                                 className={`w-full flex items-center gap-4 md:gap-5 px-5 md:px-6 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all text-left group ${
                                     currentStep === idx 
-                                        ? 'bg-brand-gold text-brand-950 shadow-[0_15px_40px_rgba(212,175,55,0.2)] scale-[1.02]' 
+                                        ? 'bg-brand-gold text-brand-950 shadow-[0_15px_40px_rgba(0,200,83,0.2)] scale-[1.02]' 
                                         : 'text-white/20 hover:text-white hover:bg-white/5'
                                 }`}
                             >
                                 <step.icon size={18} className={currentStep === idx ? 'text-brand-950' : 'text-brand-gold/30 group-hover:text-brand-gold transition-colors'} />
                                 <span className="truncate">{step.title.split(': ')[1]}</span>
-                                {planData.drafts[step.id] && <div className={`ml-auto w-2 h-2 rounded-full ${currentStep === idx ? 'bg-brand-950' : 'bg-brand-gold shadow-[0_0_10px_#d4af37]'} animate-pulse`}></div>}
+                                {planData.drafts[step.id] && <div className={`ml-auto w-2 h-2 rounded-full ${currentStep === idx ? 'bg-brand-950' : 'bg-brand-gold shadow-[0_0_10px_currentColor] text-brand-gold'} animate-pulse`}></div>}
                             </button>
                         ))}
                     </div>
@@ -407,7 +407,7 @@ const BusinessPlanBuilder: React.FC<BusinessPlanBuilderProps> = ({ scenario }) =
                             <button 
                                 onClick={handleDraft}
                                 disabled={loading}
-                                className="w-full bg-brand-gold text-brand-950 font-heading font-black py-6 md:py-8 rounded-[1.8rem] md:rounded-[2.5rem] hover:bg-white transition-all shadow-[0_20px_60px_-10px_rgba(212,175,55,0.4)] flex items-center justify-center gap-6 md:gap-8 uppercase tracking-[0.4em] text-xs md:text-sm disabled:opacity-50 group/btn"
+                                className="w-full bg-brand-gold text-brand-950 font-heading font-black py-6 md:py-8 rounded-[1.8rem] md:rounded-[2.5rem] hover:bg-white transition-all shadow-[0_20px_60px_-10px_rgba(0,200,83,0.4)] flex items-center justify-center gap-6 md:gap-8 uppercase tracking-[0.4em] text-xs md:text-sm disabled:opacity-50 group/btn"
                             >
                                 {loading ? <Loader2 className="animate-spin" size={24}/> : <><PantherLogo className="h-6 md:h-8 w-auto brightness-0 transition-transform group-hover/btn:scale-110" /> Initialize Draft</>}
                             </button>

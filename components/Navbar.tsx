@@ -121,22 +121,22 @@ const Navbar: React.FC<NavbarProps> = ({ navigation, currentPath, onNavigate, on
                                     onMouseLeave={() => setActiveMega(null)}
                                 >
                                     <button 
-                                        className={`px-3 xl:px-4 py-2 rounded-xl font-bold text-[9px] xl:text-[10px] tracking-[0.2em] uppercase transition-all duration-300 relative group/btn ${
+                                        className={`px-3 xl:px-4 py-2 rounded-xl font-extrabold text-[9px] xl:text-[10px] tracking-[0.2em] uppercase transition-all duration-300 relative group/btn ${
                                             activeMega === item.label || (currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path)))
-                                                ? 'text-brand-gold bg-white/5' 
-                                                : 'text-brand-gold/70 hover:text-brand-gold hover:bg-white/5'
+                                                ? 'text-brand-950 bg-brand-gold shadow-[inset_0_-2px_4px_rgba(0,0,0,0.3)]' 
+                                                : 'text-brand-gold/70 hover:text-brand-950 hover:bg-brand-gold hover:shadow-[inset_0_-2px_4px_rgba(0,0,0,0.3)]'
                                         }`}
                                         onClick={() => !item.subItems && handleNav(item.path)}
                                     >
                                         <span className="relative z-10">{item.label}</span>
-                                        {(currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path))) && (
-                                            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-brand-gold rounded-full shadow-[0_0_10px_#d4af37]"></div>
+                                        {(currentPath === item.path || (item.path !== '/' && currentPath.startsWith(item.path))) && !activeMega && (
+                                            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-brand-950 rounded-full"></div>
                                         )}
                                     </button>
                                     
                                     {item.subItems && (
                                         <div 
-                                            className={`absolute left-0 top-full mt-4 w-[600px] xl:w-[800px] bg-brand-950/95 backdrop-blur-2xl shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)] rounded-[2.5rem] overflow-hidden transition-all duration-500 origin-top transform border border-brand-gold/20 ${
+                                            className={`absolute left-0 top-full mt-4 w-[600px] xl:w-[800px] bg-brand-950 shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9)] rounded-[2.5rem] overflow-hidden transition-all duration-500 origin-top transform border border-brand-gold/20 ${
                                                 activeMega === item.label ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-4 invisible'
                                             }`}
                                         >

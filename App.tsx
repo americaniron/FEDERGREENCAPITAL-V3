@@ -233,7 +233,7 @@ const App: React.FC = () => {
             <UserSwitcher onUserChange={setCurrentSiteUser} onNavigate={navigate} />
 
             <div 
-                className="fixed top-0 left-0 h-1 bg-brand-gold z-[110] transition-all duration-150 ease-out shadow-[0_0_20px_rgba(46,139,87,0.6)]"
+                className="fixed top-0 left-0 h-1 bg-brand-gold z-[110] transition-all duration-150 ease-out shadow-[0_0_20px_rgba(0,200,83,0.6)]"
                 style={{ width: `${scrollProgress * 100}%` }}
             ></div>
 
@@ -296,7 +296,7 @@ const App: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 animate-fade-up" style={{ animationDelay: '600ms' }}>
                                     <button 
                                         onClick={() => navigate('/portal')} 
-                                        className="group relative px-8 sm:px-12 py-4 sm:py-6 bg-brand-gold text-brand-950 font-heading font-black rounded-xl sm:rounded-2xl flex items-center justify-center gap-4 transition-all hover:bg-white shadow-[0_20px_50px_rgba(46,139,87,0.5)] text-[10px] sm:text-[11px] uppercase tracking-[0.4em] overflow-hidden"
+                                        className="group relative px-8 sm:px-12 py-4 sm:py-6 bg-brand-gold text-brand-950 font-heading font-black rounded-xl sm:rounded-2xl flex items-center justify-center gap-4 transition-all hover:bg-white shadow-[0_20px_50px_rgba(0,200,83,0.5)] text-[10px] sm:text-[11px] uppercase tracking-[0.4em] overflow-hidden"
                                     >
                                         <span className="relative z-10">Access Terminal</span>
                                         <ArrowRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />

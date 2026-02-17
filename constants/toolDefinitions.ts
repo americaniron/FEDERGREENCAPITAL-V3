@@ -58,7 +58,7 @@ export const CALCULATORS: CalculatorDef[] = [
           { label: 'Terminal Value (Year 5)', value: `$${terminalValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}` },
           { label: 'Projected IRR', value: `${irr.toFixed(2)}%` },
         ],
-        chartData: discountedCFs.map(d => ({ label: `Year ${d.year} CF`, value: d.dcf, color: `rgba(212, 175, 55, ${0.4 + d.year * 0.1})` }))
+        chartData: discountedCFs.map(d => ({ label: `Year ${d.year} CF`, value: d.dcf, color: `rgba(0, 200, 83, ${0.4 + d.year * 0.1})` }))
       };
     }
   },
@@ -103,7 +103,7 @@ export const CALCULATORS: CalculatorDef[] = [
             ],
             chartData: [
                 { label: 'Initial Sponsor Equity', value: sponsorEquity, color: '#4338ca' },
-                { label: 'Equity Value Creation', value: exitEquityValue - sponsorEquity, color: '#d4af37' }
+                { label: 'Equity Value Creation', value: exitEquityValue - sponsorEquity, color: '#00C853' }
             ]
         };
     }
@@ -159,7 +159,7 @@ export const CALCULATORS: CalculatorDef[] = [
             ],
             chartData: [
                 { label: 'LP Distribution', value: totalToLP, color: '#312e81' },
-                { label: 'GP Distribution', value: totalToGP, color: '#d4af37' }
+                { label: 'GP Distribution', value: totalToGP, color: '#00C853' }
             ]
         };
     }
@@ -193,7 +193,7 @@ export const CALCULATORS: CalculatorDef[] = [
         chartData: [
             { label: 'Remaining Capital', value: Math.max(0, stressedCapital), color: pass ? '#00ff41' : '#ef4444' },
             { label: 'Stress Loss', value: stressLoss, color: '#312e81' },
-            { label: 'Distributions', value: inputs.plannedActions, color: '#d4af37' }
+            { label: 'Distributions', value: inputs.plannedActions, color: '#00C853' }
         ]
       };
     }

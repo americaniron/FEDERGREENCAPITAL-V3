@@ -64,7 +64,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
             <div className="scanline-overlay opacity-5"></div>
             <div className="relative z-10">
                 <div className="flex justify-between items-start mb-8">
-                    <div className={`p-4 bg-brand-gold/10 rounded-3xl text-brand-gold border border-brand-gold/20 shadow-[0_0_20px_rgba(212,175,55,0.1)] group-hover:scale-110 transition-transform`}>
+                    <div className={`p-4 bg-brand-gold/10 rounded-3xl text-brand-gold border border-brand-gold/20 shadow-[0_0_20px_rgba(0,200,83,0.1)] group-hover:scale-110 transition-transform`}>
                         <Icon size={28} />
                     </div>
                     <div className="text-[10px] font-mono text-brand-gold/40 tracking-[0.3em] uppercase">SYSTEM_NODE_{Math.floor(Math.random() * 900) + 100}</div>
@@ -80,7 +80,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
     const UnifiedDashboard = () => (
         <div className="animate-fade-in space-y-12 pb-32">
             {/* Main Header Card - Combined flair into Global Master access */}
-            <div className="relative p-16 rounded-[4rem] border border-brand-gold/20 shadow-[0_0_100px_rgba(212,175,55,0.1)] overflow-hidden bg-brand-950/30 backdrop-blur-xl">
+            <div className="relative p-16 rounded-[4rem] border border-brand-gold/20 shadow-[0_0_100px_rgba(0,200,83,0.1)] overflow-hidden bg-brand-950/30 backdrop-blur-xl">
                 <div className="scanline-overlay"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/5 via-transparent to-transparent"></div>
                 <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-16">
@@ -156,7 +156,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
                     </p>
                     <button 
                         onClick={() => onNavigate('/services/analysis')}
-                        className="w-full py-5 bg-brand-gold text-brand-950 font-extrabold rounded-2xl transition-all shadow-[0_0_30px_rgba(212,175,55,0.2)] hover:shadow-brand-gold/50 text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3"
+                        className="w-full py-5 bg-brand-gold text-brand-950 font-extrabold rounded-2xl transition-all shadow-[0_0_30px_rgba(0,200,83,0.2)] hover:shadow-brand-gold/50 text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-3"
                     >
                         <Zap size={16} /> Open Strategy Engine
                     </button>
@@ -169,7 +169,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
                             <span className="text-brand-gold font-bold text-lg">84%</span>
                         </div>
                         <div className="w-full h-2 bg-brand-950/40 rounded-full overflow-hidden border border-brand-gold/10">
-                            <div className="h-full bg-brand-gold shadow-[0_0_10px_#d4af37] w-[84%]"></div>
+                            <div className="h-full bg-brand-gold shadow-[0_0_10px_currentColor] text-brand-gold w-[84%]"></div>
                         </div>
                         <p className="text-xs text-white/60 leading-relaxed italic">Global market sentiment indicates consistent institutional top-quartile performance.</p>
                     </div>
@@ -265,7 +265,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
                         ))}
                     </div>
                     <div className="mt-16 w-80 h-1 bg-brand-gold/10 rounded-full overflow-hidden border border-brand-gold/20 relative z-10">
-                        <div className="h-full bg-brand-gold animate-shimmer shadow-[0_0_20px_#d4af37]"></div>
+                        <div className="h-full bg-brand-gold animate-shimmer shadow-[0_0_20px_currentColor] text-brand-gold"></div>
                     </div>
                     <p className="mt-8 text-brand-gold font-bold uppercase tracking-[0.6em] text-[10px] animate-pulse relative z-10">AUTHORIZING_IDENTITY...</p>
                 </div>
@@ -275,7 +275,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
                 <div className="max-w-xl mx-auto px-6 relative z-10 pt-12">
                     <div className="bg-brand-950/50 border border-brand-gold/20 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.6)] p-16 text-center backdrop-blur-3xl animate-fade-up relative overflow-hidden">
                         <div className="scanline-overlay opacity-5"></div>
-                        <div className="w-32 h-32 bg-brand-gold/10 rounded-[2.5rem] border border-brand-gold/20 flex items-center justify-center mx-auto mb-12 shadow-[0_0_50px_rgba(212,175,55,0.1)] group transition-all hover:scale-105">
+                        <div className="w-32 h-32 bg-brand-gold/10 rounded-[2.5rem] border border-brand-gold/20 flex items-center justify-center mx-auto mb-12 shadow-[0_0_50px_rgba(0,200,83,0.1)] group transition-all hover:scale-105">
                             <PantherLogo className="h-20 w-auto brightness-0 invert" />
                         </div>
                         <h2 className="text-5xl font-heading font-extrabold text-white mb-6 tracking-tighter uppercase">Strategic Entry</h2>
@@ -283,7 +283,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
                         
                         <button 
                             onClick={handleConnect}
-                            className="group w-full flex items-center gap-8 p-10 bg-brand-gold text-brand-950 border border-brand-gold/30 rounded-[2.5rem] hover:bg-white transition-all shadow-[0_20px_50px_-10px_rgba(212,175,55,0.4)]"
+                            className="group w-full flex items-center gap-8 p-10 bg-brand-gold text-brand-950 border border-brand-gold/30 rounded-[2.5rem] hover:bg-white transition-all shadow-[0_20px_50px_-10px_rgba(0,200,83,0.4)]"
                         >
                             <div className={`p-5 bg-brand-950 rounded-[2rem] text-brand-gold border border-brand-gold/20 group-hover:scale-110 transition-transform shadow-xl`}>
                                 <TerminalIcon size={32} />
@@ -327,7 +327,7 @@ const Portal: React.FC<PortalProps> = ({ onNavigate }) => {
                             </div>
                             <button className="w-16 h-16 rounded-[1.5rem] bg-brand-gold/5 border border-brand-gold/10 flex items-center justify-center text-white/60 hover:text-brand-gold hover:border-brand-gold transition-all relative group shadow-inner">
                                 <Bell size={24} />
-                                <span className="absolute top-4 right-4 w-3 h-3 bg-brand-gold rounded-full shadow-[0_0_10px_#d4af37] animate-pulse"></span>
+                                <span className="absolute top-4 right-4 w-3 h-3 bg-brand-gold rounded-full shadow-[0_0_10px_currentColor] text-brand-gold animate-pulse"></span>
                             </button>
                             <button onClick={handleDisconnect} className="flex items-center gap-4 px-10 py-5 bg-brand-gold text-brand-950 text-[11px] font-extrabold uppercase tracking-[0.3em] rounded-2xl transition-all shadow-xl hover:bg-white">
                                 <LogOut size={18} /> Disconnect
